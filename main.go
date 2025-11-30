@@ -7,13 +7,13 @@ import (
 
 	in "read-it/internal"
 	ai "read-it/internal/aiSum"
-	ti "read-it/internal/components/input"
 	qu "read-it/internal/components/queue"
-	s "read-it/internal/components/selector"
+	sl "read-it/internal/components/selector"
 	sp "read-it/internal/components/spinner"
 	ta "read-it/internal/components/textarea"
-	j "read-it/internal/jira"
-	r "read-it/internal/reader"
+	ti "read-it/internal/components/textinput"
+	ji "read-it/internal/jira"
+	rd "read-it/internal/reader"
 	cy "read-it/internal/reader/cypress"
 )
 
@@ -28,18 +28,18 @@ func main() {
 	}
 	path := os.Args[1]
 
-	tests, err := r.BuildTests(path, cy.Cypress{})
+	tests, err := rd.BuildTests(path, cy.Cypress{})
 	// tests, err := r.BuildTests(path, ju.JUnit{})
 	if err != nil {
 		in.ThrowError(err.Error())
 	}
 
-	optionsChosen, err := s.NewSelector(tests, "Choose tests to summarize").Choose()
+	optionsChosen, err := sl.NewSelector(tests, "Choose tests to summarize").Choose()
 	if err != nil {
 		in.ThrowError(err.Error())
 	}
 
-	if optionsChosen == s.ExitOption {
+	if optionsChosen == sl.ExitOption {
 		os.Exit(0)
 	}
 
@@ -78,7 +78,7 @@ func main() {
 		in.ThrowError(err.Error())
 	}
 
-	j := j.NewJira(JiraURL, "SCRUM")
+	j := ji.NewJira(JiraURL, "SCRUM")
 
 	firstTask := qu.NewTask("Creating JIRA ticket...", func(m qu.Model) (any, error) {
 		testTitle := fmt.Sprintf("Test for: %s", srcTicket)
