@@ -7,12 +7,12 @@ import (
 
 	in "read-it/internal"
 	ai "read-it/internal/aiSum"
-	t "read-it/internal/components/input"
-	"read-it/internal/components/queue"
+	ti "read-it/internal/components/input"
+	qu "read-it/internal/components/queue"
 	s "read-it/internal/components/selector"
 	sp "read-it/internal/components/spinner"
-	v "read-it/internal/components/validator"
-	"read-it/internal/jira"
+	ta "read-it/internal/components/textarea"
+	j "read-it/internal/jira"
 	r "read-it/internal/reader"
 	cy "read-it/internal/reader/cypress"
 )
@@ -68,24 +68,24 @@ func main() {
 
 	in.ClearStdOut()
 
-	testValidated, err := v.NewValidator(content.Choices[0].Message.Content).Validate()
+	testValidated, err := ta.NewValidator(content.Choices[0].Message.Content).Validate()
 	if err != nil {
 		in.ThrowError(err.Error())
 	}
 
-	srcTicket, err := t.NewInput("BP-xxxx", in.CancelCtrl).Start()
+	srcTicket, err := ti.NewInput("BP-xxxx", in.CancelCtrl).Start()
 	if err != nil {
 		in.ThrowError(err.Error())
 	}
 
-	j := jira.NewJira(JiraURL, "SCRUM")
+	j := j.NewJira(JiraURL, "SCRUM")
 
-	firstTask := queue.NewTask("Creating JIRA ticket...", func(m queue.Model) (any, error) {
+	firstTask := qu.NewTask("Creating JIRA ticket...", func(m qu.Model) (any, error) {
 		testTitle := fmt.Sprintf("Test for: %s", srcTicket)
 		return j.CreateIssue(testTitle, testValidated)
 	})
 
-	secondTask := queue.NewTask("Linking Issues...", func(m queue.Model) (any, error) {
+	secondTask := qu.NewTask("Linking Issues...", func(m qu.Model) (any, error) {
 		firstTask, err := m.GetResultFromTask(0)
 		if err != nil {
 			return nil, err
@@ -101,7 +101,7 @@ func main() {
 		return nil, err
 	})
 
-	_, err = queue.NewQueue(firstTask, secondTask).Start()
+	_, err = qu.NewQueue(firstTask, secondTask).Start()
 	if err != nil {
 		in.ThrowError(err.Error())
 	}
