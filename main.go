@@ -17,8 +17,6 @@ import (
 	cy "read-it/internal/reader/cypress"
 )
 
-const JiraURL = ""
-
 func main() {
 	// file path as arg
 	args := os.Args
@@ -78,7 +76,12 @@ func main() {
 		in.ThrowError(err.Error())
 	}
 
-	j := ji.NewJira(JiraURL, "SCRUM")
+	loadedVar, err := in.LoadEnv("JIRA_URL", "JIRA_PROJECT")
+	if err != nil {
+		in.ThrowError(errors.New("jira url was not detected in .env file").Error())
+	}
+
+	j := ji.NewJira(loadedVar[0], loadedVar[1])
 
 	firstTask := qu.NewTask("Creating JIRA ticket...", func(m qu.Model) (any, error) {
 		testTitle := fmt.Sprintf("Test for: %s", srcTicket)
