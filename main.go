@@ -46,7 +46,7 @@ func main() {
 		in.ThrowError(err.Error())
 	}
 
-	resp, cancel, err := ai.SummarizeTests([]string{tests[optionsChosen].PrintItem()})
+	resp, cancel, err := ai.SummarizeTests("instructions.txt", []string{tests[optionsChosen].PrintItem()})
 	if err != nil {
 		in.ThrowError(err.Error())
 	}

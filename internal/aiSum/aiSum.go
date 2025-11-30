@@ -2,11 +2,13 @@
 package aisum
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
@@ -32,9 +34,37 @@ type AIResponse struct {
 	Choices []Choice `json:"choices"`
 }
 
-func buildInstructions(tests []string) string {
+func readInstructions(filePath string) (*strings.Builder, error) {
+	file, err := os.Open(filePath)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+
+	instructions := strings.Builder{}
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		rawLine := scanner.Text()
+		instructions.WriteString(rawLine)
+	}
+
+	if err := scanner.Err(); err != nil {
+		return nil, err
+	}
+
+	return &instructions, nil
+}
+
+func buildInstructions(filePath string, tests []string) (*strings.Builder, error) {
 	s := strings.Builder{}
-	s.WriteString(Instructions)
+
+	inst, err := readInstructions(filePath)
+	if err != nil {
+		return nil, err
+	}
+
+	s.WriteString(inst.String())
 
 	for _, test := range tests {
 		s.WriteString("\n")
@@ -42,11 +72,16 @@ func buildInstructions(tests []string) string {
 		s.WriteString("\n")
 	}
 
-	return s.String()
+	return &s, nil
 }
 
-func transformPayload(tests []string) (*bytes.Buffer, error) {
-	message := map[string]string{"role": "user", "content": buildInstructions(tests)}
+func transformPayload(filePath string, tests []string) (*bytes.Buffer, error) {
+	content, err := buildInstructions(filePath, tests)
+	if err != nil {
+		return nil, err
+	}
+
+	message := map[string]string{"role": "user", "content": content.String()}
 
 	payload := map[string]any{"model": "gemma3:12b", "messages": []map[string]string{message}}
 
@@ -58,7 +93,7 @@ func transformPayload(tests []string) (*bytes.Buffer, error) {
 	return bytes.NewBuffer(payloadInBytes), nil
 }
 
-func SummarizeTests(tests []string) (*http.Response, context.CancelFunc, error) {
+func SummarizeTests(instructionsFilePath string, tests []string) (*http.Response, context.CancelFunc, error) {
 	// load .env vars
 	loadedVars, err := internal.LoadEnv("API_KEY", "HOST", "PORT", "ENDPOINT")
 	if err != nil {
@@ -67,12 +102,13 @@ func SummarizeTests(tests []string) (*http.Response, context.CancelFunc, error) 
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 
-	payloadStringify, err := transformPayload(tests)
+	payloadStringify, err := transformPayload(instructionsFilePath, tests)
 	if err != nil {
 		cancel()
 		return nil, nil, err
 	}
 
+	// TODO: PORT might not be needed
 	URL := fmt.Sprintf("http://%s:%s/%s", loadedVars[1], loadedVars[2], loadedVars[3])
 
 	req, err := http.NewRequestWithContext(ctx, "POST", URL, payloadStringify)
