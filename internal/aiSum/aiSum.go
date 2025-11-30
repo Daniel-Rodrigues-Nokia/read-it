@@ -34,6 +34,12 @@ type AIResponse struct {
 	Choices []Choice `json:"choices"`
 }
 
+//////////////////////
+//
+// Private Methods
+//
+//////////////////////
+
 func readInstructions(filePath string) (*strings.Builder, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -92,6 +98,12 @@ func transformPayload(filePath string, tests []string) (*bytes.Buffer, error) {
 
 	return bytes.NewBuffer(payloadInBytes), nil
 }
+
+//////////////////////
+//
+// API handlers
+//
+//////////////////////
 
 func SummarizeTests(instructionsFilePath string, tests []string) (*http.Response, context.CancelFunc, error) {
 	// load .env vars

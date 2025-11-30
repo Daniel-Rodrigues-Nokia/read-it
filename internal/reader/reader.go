@@ -50,7 +50,7 @@ func updateDepthCounter(rawLine *string, counter *int) bool {
 //
 //////////////////////
 
-func BuildTests(filePath string, reader Reader) ([]i.Item, error) {
+func ScanTests(filePath string, reader Reader) ([]i.Item, error) {
 	// get file
 	file, err := os.Open(filePath)
 	if err != nil {

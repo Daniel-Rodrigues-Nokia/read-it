@@ -224,7 +224,7 @@ func NewSelector(choises []item.Item, banner string) (m model) {
 	return model{cursor: 0, choises: choises, banner: banner, paginator: p}
 }
 
-func (m model) Choose() (int, error) {
+func (m model) Start() (int, error) {
 	p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseCellMotion())
 
 	_m, err := p.Run()

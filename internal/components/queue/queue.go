@@ -33,14 +33,34 @@ type Task struct {
 	Result      any
 }
 
-func NewTask(desc string, action func(m Model) (any, error)) Task {
-	return Task{Description: desc, Action: action, Done: false, Error: false}
-}
-
 type Model struct {
 	spinner spinner.Model
 	Queue   []Task
 	Done    bool
+}
+
+//////////////////////
+//
+// Private Methods
+//
+//////////////////////
+
+func (m Model) header() string {
+	return lipgloss.NewStyle().Padding(1, 0).Foreground(lipgloss.Color(internal.HeaderColor)).Render("Doing some work")
+}
+
+func (m Model) footer() string {
+	return lipgloss.NewStyle().Padding(1, 0).Foreground(lipgloss.Color(internal.HelpColor)).Render("ctrl+c: Cancel")
+}
+
+// /////////////////////
+//
+// API handlers (Queue)
+//
+// /////////////////////
+
+func NewTask(desc string, action func(m Model) (any, error)) Task {
+	return Task{Description: desc, Action: action, Done: false, Error: false}
 }
 
 func NewQueue(tasks ...Task) (m Model) {
@@ -53,14 +73,6 @@ func NewQueue(tasks ...Task) (m Model) {
 		Queue:   tasks,
 		Done:    false,
 	}
-}
-
-func (m Model) header() string {
-	return lipgloss.NewStyle().Padding(1, 0).Foreground(lipgloss.Color(internal.HeaderColor)).Render("Doing some work")
-}
-
-func (m Model) footer() string {
-	return lipgloss.NewStyle().Padding(1, 0).Foreground(lipgloss.Color(internal.HelpColor)).Render("ctrl+c: Cancel")
 }
 
 func (m Model) Start() (bool, error) {
@@ -105,6 +117,12 @@ func (m Model) GetResultFromTask(index int) (*Task, error) {
 
 	return &m.Queue[index], nil
 }
+
+///////////////////////
+//
+// Tea related methods
+//
+///////////////////////
 
 func (m Model) Init() tea.Cmd {
 	return m.spinner.Tick

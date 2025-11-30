@@ -19,6 +19,12 @@ type model struct {
 	err      error
 }
 
+///////////////////////
+//
+// Private methods
+//
+///////////////////////
+
 func (m model) header() string {
 	header := lipgloss.NewStyle().Padding(1).Foreground(lipgloss.Color(internal.HeaderColor)).Render("Is everything alright?")
 
@@ -30,6 +36,39 @@ func (m model) footer() string {
 
 	return footer
 }
+
+//////////////////////
+//
+// API handlers
+//
+//////////////////////
+
+func NewTextarea(test string) model {
+	ti := textarea.New()
+
+	ti.SetValue(test)
+	ti.Focus()
+	ti.ShowLineNumbers = false
+	ti.Prompt = lipgloss.NewStyle().Foreground(lipgloss.Color(internal.MiscColor)).Render("┃ ")
+
+	return model{textarea: ti, err: nil}
+}
+
+func (m model) Start() (string, error) {
+	p := tea.NewProgram(m, tea.WithAltScreen())
+
+	if _, err := p.Run(); err != nil {
+		return "", err
+	}
+
+	return m.textarea.Value(), nil
+}
+
+///////////////////////
+//
+// Tea related methods
+//
+///////////////////////
 
 func (m model) Init() tea.Cmd {
 	return textarea.Blink
@@ -80,25 +119,4 @@ func (m model) View() string {
 	}
 
 	return fmt.Sprintf("%s\n%s\n%s", m.header(), lipgloss.NewStyle().Padding(0, 1).Render(m.textarea.View()), m.footer())
-}
-
-func NewValidator(test string) model {
-	ti := textarea.New()
-
-	ti.SetValue(test)
-	ti.Focus()
-	ti.ShowLineNumbers = false
-	ti.Prompt = lipgloss.NewStyle().Foreground(lipgloss.Color(internal.MiscColor)).Render("┃ ")
-
-	return model{textarea: ti, err: nil}
-}
-
-func (m model) Validate() (string, error) {
-	p := tea.NewProgram(m, tea.WithAltScreen())
-
-	if _, err := p.Run(); err != nil {
-		return "", err
-	}
-
-	return m.textarea.Value(), nil
 }

@@ -44,7 +44,7 @@ func (m model) footer() string {
 //
 //////////////////////
 
-func BuildSpinner(desc string, cancel func()) model {
+func NewSpinner(desc string, cancel func()) model {
 	s := spinner.New()
 
 	s.Spinner = spinner.Dot

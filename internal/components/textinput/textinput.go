@@ -22,6 +22,12 @@ type model struct {
 	err        error
 }
 
+//////////////////////
+//
+// Private Methods
+//
+//////////////////////
+
 func (m model) header() string {
 	header := lipgloss.NewStyle().Padding(1).Foreground(lipgloss.Color(internal.HeaderColor)).Render("Jira Ticket ?")
 
@@ -33,6 +39,39 @@ func (m model) footer() string {
 
 	return footer
 }
+
+//////////////////////
+//
+// API handlers
+//
+//////////////////////
+
+func NewInput(placeholder string, cancel func()) *model {
+	ti := textinput.New()
+
+	ti.Placeholder = placeholder
+	ti.Focus()
+	ti.CharLimit = 10
+	ti.Width = 20
+
+	return &model{textInput: ti, err: nil, cancelling: false, cancel: cancel}
+}
+
+func (m *model) Start() (string, error) {
+	p := tea.NewProgram(m, tea.WithAltScreen())
+
+	if _, err := p.Run(); err != nil {
+		return "", err
+	}
+
+	return m.textInput.Value(), nil
+}
+
+//////////////////////
+//
+// Tea related methods
+//
+//////////////////////
 
 func (m *model) Init() tea.Cmd {
 	return textinput.Blink
@@ -72,25 +111,4 @@ func (m *model) View() string {
 		m.textInput.View(),
 		m.footer(),
 	)
-}
-
-func NewInput(placeholder string, cancel func()) *model {
-	ti := textinput.New()
-
-	ti.Placeholder = placeholder
-	ti.Focus()
-	ti.CharLimit = 10
-	ti.Width = 20
-
-	return &model{textInput: ti, err: nil, cancelling: false, cancel: cancel}
-}
-
-func (m *model) Start() (string, error) {
-	p := tea.NewProgram(m, tea.WithAltScreen())
-
-	if _, err := p.Run(); err != nil {
-		return "", err
-	}
-
-	return m.textInput.Value(), nil
 }
