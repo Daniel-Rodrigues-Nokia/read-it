@@ -1,1 +1,31 @@
 # read-it
+
+`read-it` is a small, self-hosted command-line TUI ([bubbletea](https://github.com/charmbracelet/bubbletea)) tool written in Go.  
+Its purpose is to help developers browse Cypress test files, pick a test, automatically generate a summary via an LLM (using your API key), review/adjust the summary, and then create a Jira “test” ticket linked to a bug or improvement.
+
+## Features
+
+- Parses Cypress test files (JS/TS) and extracts all tests
+- Presents a terminal UI allowing you to browse and choose a test to summarise
+- Integrates with an LLM (via API key from `.env`)
+- Lets user review and manually refine the summary before committing
+- After confirmation, creates a new “test” ticket in Jira and links it to an existing ticket (bug, improvement, etc.)
+
+## Requirements
+
+- Access to a compatible LLM API (e.g. via API key in environment)
+- Credentials / permissions to create tickets in your Jira instance
+
+## Installation
+
+```bash
+# Clone the repo
+git clone https://github.com/dffrs/read-it.git
+cd read-it
+
+# Build the binary
+make
+
+# Usage
+./read-it <path to cypress test>
+```
