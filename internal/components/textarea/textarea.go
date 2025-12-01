@@ -32,7 +32,7 @@ func (m model) header() string {
 }
 
 func (m model) footer() string {
-	footer := lipgloss.NewStyle().Padding(1).Foreground(lipgloss.Color(internal.HelpColor)).Render("ctrl+c: End Review")
+	footer := lipgloss.NewStyle().Padding(1).Foreground(lipgloss.Color(internal.HelpColor)).Render("esc: End Review")
 
 	return footer
 }
@@ -90,10 +90,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyMsg:
 		switch msg.Type {
 		case tea.KeyEsc:
-			if m.textarea.Focused() {
-				m.textarea.Blur()
-			}
-		case tea.KeyCtrlC:
 			return m, tea.Quit
 		default:
 			if !m.textarea.Focused() {
