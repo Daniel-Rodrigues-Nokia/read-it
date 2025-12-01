@@ -241,7 +241,9 @@ func (m model) Start() (int, error) {
 	}
 
 	if _M, ok := _m.(model); ok {
-		return _M.cursor, nil
+		index := _M.cursor + _M.paginator.Page*PageSize
+
+		return index, nil
 	}
 
 	return DefaultOption, errors.New("no option chosen")
