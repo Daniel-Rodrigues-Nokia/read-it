@@ -107,7 +107,7 @@ func transformPayload(filePath string, tests []string) (*bytes.Buffer, error) {
 
 func SummarizeTests(instructionsFilePath string, tests []string) (*http.Response, context.CancelFunc, error) {
 	// load .env vars
-	loadedVars, err := internal.LoadEnv("API_KEY", "HOST", "PORT", "ENDPOINT")
+	loadedVars, err := internal.LoadEnv("API_KEY", "HOST", "ENDPOINT")
 	if err != nil {
 		return nil, nil, err
 	}
@@ -120,8 +120,7 @@ func SummarizeTests(instructionsFilePath string, tests []string) (*http.Response
 		return nil, nil, err
 	}
 
-	// TODO: PORT might not be needed
-	URL := fmt.Sprintf("http://%s:%s/%s", loadedVars[1], loadedVars[2], loadedVars[3])
+	URL := fmt.Sprintf("%s/%s", loadedVars[1], loadedVars[2])
 
 	req, err := http.NewRequestWithContext(ctx, "POST", URL, payloadStringify)
 	if err != nil {
