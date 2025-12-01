@@ -16,9 +16,9 @@ import (
 )
 
 const (
-	DefaultOption          int = 0
-	DefaultNumberOfOptions int = 10
-	ExitOption             int = -1
+	DefaultOption int = 0
+	PageSize      int = 10
+	ExitOption    int = -1
 )
 
 type model struct {
@@ -36,13 +36,13 @@ type model struct {
 //
 // ///////////////////
 func (m model) getCurrentItem() item.Item {
-	index := m.cursor + m.paginator.Page*DefaultNumberOfOptions
+	index := m.cursor + m.paginator.Page*PageSize
 
 	return m.choises[index]
 }
 
 func (m model) toggleSelection() {
-	m.choises[m.cursor+m.paginator.Page*DefaultNumberOfOptions].IsSelected = !m.choises[m.cursor+m.paginator.Page*DefaultNumberOfOptions].IsSelected
+	m.choises[m.cursor+m.paginator.Page*PageSize].IsSelected = !m.choises[m.cursor+m.paginator.Page*PageSize].IsSelected
 }
 
 func (m model) headerView() string {
@@ -89,9 +89,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.viewport.SetContent(m.getCurrentItem().Description)
 
 		case tea.KeyLeft.String(), "h":
-			index := m.cursor + m.paginator.Page*DefaultNumberOfOptions
+			index := m.cursor + m.paginator.Page*PageSize
 
-			if index-DefaultNumberOfOptions <= 0 {
+			if index-PageSize <= 0 {
 				m.cursor = 0
 				m.paginator.PrevPage()
 
@@ -100,10 +100,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case tea.KeyRight.String(), "l":
 			numberOfChoises := len(m.choises)
-			index := m.cursor + m.paginator.Page*DefaultNumberOfOptions
+			index := m.cursor + m.paginator.Page*PageSize
 
-			if index+DefaultNumberOfOptions >= numberOfChoises {
-				m.cursor = (numberOfChoises % DefaultNumberOfOptions) - 1
+			if index+PageSize >= numberOfChoises {
+				m.cursor = min(PageSize-1, numberOfChoises%PageSize-1)
+
+				if m.cursor == ExitOption {
+					m.cursor = PageSize - 1
+				}
+
 				m.paginator.NextPage()
 
 				return m, nil
@@ -115,12 +120,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				break
 			}
 
-			if (m.cursor == (len(m.choises)%DefaultNumberOfOptions)-1) && m.paginator.OnLastPage() {
+			index := m.cursor + m.paginator.Page*PageSize
+
+			if index == len(m.choises)-1 && m.paginator.OnLastPage() {
 				break
 			}
 
 			m.cursor++
-			if m.cursor >= DefaultNumberOfOptions {
+			if m.cursor >= PageSize {
 				m.paginator.NextPage()
 				m.cursor = 0
 			}
@@ -138,7 +145,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.cursor--
 			if m.cursor < 0 {
 				m.paginator.PrevPage()
-				m.cursor = DefaultNumberOfOptions - 1
+				m.cursor = PageSize - 1
 			}
 		}
 	case tea.WindowSizeMsg:
@@ -216,7 +223,7 @@ func NewSelector(choises []item.Item, banner string) (m model) {
 	p := paginator.New()
 
 	p.Type = paginator.Dots
-	p.PerPage = DefaultNumberOfOptions
+	p.PerPage = PageSize
 	p.ActiveDot = lipgloss.NewStyle().Foreground(lipgloss.Color(internal.FocusColor)).Render("•")
 	p.InactiveDot = lipgloss.NewStyle().Foreground(lipgloss.Color(internal.HelpColor)).Render("•")
 	p.SetTotalPages(len(choises))
