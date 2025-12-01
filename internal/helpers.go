@@ -73,3 +73,16 @@ func CancelCtrl() {
 
 	os.Exit(0)
 }
+
+func GetUsageMsg() string {
+	return `
+Usage: read-it [options]
+
+Options:
+	-f <file>	Path to cypress test file
+	-debug <mode>	Enable debug output and stop execution early.
+			Available modes:
+				* selection:	After choosing a test, print the selected test details and exit.
+				* textarea:	After reviewing AI summary, print the final output and exit.
+	`
+}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"os"
 
@@ -17,17 +18,25 @@ import (
 	cy "read-it/internal/reader/cypress"
 )
 
+const (
+	debugTestSelection = "selection"
+	debugTextareaOuput = "textarea"
+)
+
 func main() {
-	// file path as arg
-	args := os.Args
+	filePath := flag.String("f", "", "path to file")
+	debug := flag.String("debug", "", "debug")
 
-	if len(args) < 2 {
-		in.ThrowError("File path needed")
+	flag.Parse()
+
+	// no file path ? throw error
+	if *filePath == "" {
+		usageMsg := in.GetUsageMsg()
+		in.ThrowError(usageMsg)
 	}
-	path := os.Args[1]
 
-	// right now, it supports Cypress and Java (untested) test cases
-	tests, err := rd.ScanTests(path, cy.Cypress{})
+	// scan file and get tests
+	tests, err := rd.ScanTests(*filePath, cy.Cypress{})
 	if err != nil {
 		in.ThrowError(err.Error())
 	}
@@ -42,6 +51,12 @@ func main() {
 
 	// ExitOption ? Then abort this whole thing
 	if optionsChosen == sl.ExitOption {
+		os.Exit(0)
+	}
+
+	// debug test selection stops execution here
+	if *debug == debugTestSelection {
+		fmt.Printf("Output:\nindex: %d\ntest:\n%s", optionsChosen, tests[optionsChosen].PrintItem())
 		os.Exit(0)
 	}
 
@@ -82,6 +97,12 @@ func main() {
 	testValidated, err := ta.NewTextarea(content.Choices[0].Message.Content).Start()
 	if err != nil {
 		in.ThrowError(err.Error())
+	}
+
+	// debug textarea stops execution here
+	if *debug == debugTextareaOuput {
+		fmt.Printf("Output:\n%s\n", testValidated)
+		os.Exit(0)
 	}
 
 	// ------------------------------------------- Phase 4: Create & Link JIRA Tickets ----------------------------------------------
