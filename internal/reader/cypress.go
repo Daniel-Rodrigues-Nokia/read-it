@@ -26,7 +26,7 @@ func (c Cypress) GetTestTitle(test string) string {
 	for line := range strings.SplitSeq(test, "\n") {
 		line = strings.TrimSpace(line)
 
-		if strings.HasPrefix(line, "it(") {
+		if strings.HasPrefix(line, startOfTest) {
 			// grab what's inside it("...") before the comma or closing parenthesis
 			start := strings.Index(line, "(")
 			end := strings.LastIndex(line, ",")
