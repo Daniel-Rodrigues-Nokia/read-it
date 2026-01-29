@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "embed"
 	"errors"
 	"flag"
 	"fmt"
@@ -16,6 +17,9 @@ import (
 	ji "read-it/internal/jira"
 	rd "read-it/internal/reader"
 )
+
+//go:embed instructions.txt
+var instructions string
 
 const (
 	debugTestSelection = "selection"
@@ -68,7 +72,7 @@ func main() {
 	}
 
 	// ('getting the summary' only starts here)
-	resp, err := ai.AISummary("instructions.txt", []string{tests[optionsChosen].PrintItem()}, ai.Copilot{})
+	resp, err := ai.AISummary(instructions, []string{tests[optionsChosen].PrintItem()}, ai.Copilot{})
 	if err != nil {
 		in.ThrowError(err.Error())
 	}

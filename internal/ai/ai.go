@@ -2,8 +2,6 @@
 package ai
 
 import (
-	"bufio"
-	"os"
 	"strings"
 )
 
@@ -17,8 +15,8 @@ type AiClient interface {
 //
 ////////////
 
-func AISummary(instructionsPath string, tests []string, ai AiClient) (*[]string, error) {
-	resp, err := ai.Summarize(instructionsPath, tests)
+func AISummary(instructions string, tests []string, ai AiClient) (*[]string, error) {
+	resp, err := ai.Summarize(instructions, tests)
 	if err != nil {
 		return nil, err
 	}
@@ -32,37 +30,34 @@ func AISummary(instructionsPath string, tests []string, ai AiClient) (*[]string,
 //
 ////////////
 
-func ReadInstructions(filePath string) (*strings.Builder, error) {
-	file, err := os.Open(filePath)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
+// NOTE: DEPRECATED: since instructions.txt will be embed into the bin file
+// we can just use it straight away (no need to read files)
+// func ReadInstructions(filePath string) (*strings.Builder, error) {
+// 	file, err := os.Open(filePath)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer file.Close()
+//
+// 	instructions := strings.Builder{}
+// 	scanner := bufio.NewScanner(file)
+//
+// 	for scanner.Scan() {
+// 		rawLine := scanner.Text()
+// 		instructions.WriteString(rawLine)
+// 	}
+//
+// 	if err := scanner.Err(); err != nil {
+// 		return nil, err
+// 	}
+//
+// 	return &instructions, nil
+// }
 
-	instructions := strings.Builder{}
-	scanner := bufio.NewScanner(file)
-
-	for scanner.Scan() {
-		rawLine := scanner.Text()
-		instructions.WriteString(rawLine)
-	}
-
-	if err := scanner.Err(); err != nil {
-		return nil, err
-	}
-
-	return &instructions, nil
-}
-
-func BuildInstructions(filePath string, tests []string) (*strings.Builder, error) {
+func BuildInstructions(instructions string, tests []string) (*strings.Builder, error) {
 	s := strings.Builder{}
 
-	inst, err := ReadInstructions(filePath)
-	if err != nil {
-		return nil, err
-	}
-
-	s.WriteString(inst.String())
+	s.WriteString(instructions)
 
 	for _, test := range tests {
 		s.WriteString("\n")
