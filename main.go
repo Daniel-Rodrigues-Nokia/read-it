@@ -7,7 +7,7 @@ import (
 	"os"
 
 	in "read-it/internal"
-	ai "read-it/internal/aiSum"
+	ai "read-it/internal/ai"
 	qu "read-it/internal/components/queue"
 	sl "read-it/internal/components/selector"
 	sp "read-it/internal/components/spinner"
@@ -15,7 +15,6 @@ import (
 	ti "read-it/internal/components/textinput"
 	ji "read-it/internal/jira"
 	rd "read-it/internal/reader"
-	cy "read-it/internal/reader/cypress"
 )
 
 const (
@@ -36,7 +35,7 @@ func main() {
 	}
 
 	// scan file and get tests
-	tests, err := rd.ScanTests(*filePath, cy.Cypress{})
+	tests, err := rd.ScanTests(*filePath, rd.Cypress{})
 	if err != nil {
 		in.ThrowError(err.Error())
 	}
@@ -69,32 +68,20 @@ func main() {
 	}
 
 	// ('getting the summary' only starts here)
-	resp, cancel, err := ai.SummarizeTests("instructions.txt", []string{tests[optionsChosen].PrintItem()})
+	resp, err := ai.AISummary("instructions.txt", []string{tests[optionsChosen].PrintItem()}, ai.Copilot{})
 	if err != nil {
 		in.ThrowError(err.Error())
 	}
-	defer cancel()
-	defer resp.Body.Close()
 
 	spinner.Stop()
-
-	// read AI's response
-	content, err := ai.ReadSummary(resp)
-	if err != nil {
-		in.ThrowError(err.Error())
-	}
-
-	// do standard checks
-	if len(content.Choices) < 1 {
-		in.ThrowError(errors.New("got no response back").Error())
-	}
-
 	in.ClearStdOut()
 
 	// -------------------------------------------------- Phase 3: Review summary ---------------------------------------------------
 	// Now, output that response to a textarea, so that we can review it
 	// and make changes if needed
-	testValidated, err := ta.NewTextarea(content.Choices[0].Message.Content).Start()
+
+	summary := *resp
+	testValidated, err := ta.NewTextarea(summary[0]).Start()
 	if err != nil {
 		in.ThrowError(err.Error())
 	}

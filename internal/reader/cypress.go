@@ -1,5 +1,4 @@
-// Package cypress
-package cypress
+package reader
 
 import "strings"
 

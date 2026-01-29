@@ -1,5 +1,4 @@
-// Package junit
-package junit
+package reader
 
 import "strings"
 
