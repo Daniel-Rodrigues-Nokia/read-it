@@ -36,14 +36,12 @@ func LoadEnv() (*Config, error) {
 
 	err = godotenv.Load(envPath)
 	if err != nil {
-		fmt.Printf("failed to load %s file. Creating base template in %s\n", ENV, envPath)
-
 		err := generateBaseTemplate(envPath)
 		if err != nil {
 			return nil, err
 		}
 
-		return nil, nil
+		return nil, fmt.Errorf("failed to load %s file. Creating base template in %s", ENV, envPath)
 	}
 
 	return &Config{

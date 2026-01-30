@@ -43,12 +43,6 @@ func main() {
 		in.ThrowError(err.Error())
 	}
 
-	// TODO: get proper error message instead of getting it from 'config == nil && err == nil'
-	// this means that app needs to be restarted
-	if config == nil && err == nil {
-		os.Exit(0)
-	}
-
 	// scan file and get tests
 	tests, err := rd.ScanTests(*filePath, rd.Cypress{})
 	if err != nil {
