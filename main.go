@@ -115,7 +115,7 @@ func main() {
 	// - link it to the main ticket (got from phase 3)
 	firstTask := qu.NewTask("Creating JIRA ticket...", func(m qu.Model) (any, error) {
 		testTitle := fmt.Sprintf("Test for: %s", srcTicket)
-		return j.CreateIssue(testTitle, testValidated)
+		return j.CreateXrayTest(testTitle, testValidated)
 	})
 
 	secondTask := qu.NewTask("Linking Issues...", func(m qu.Model) (any, error) {

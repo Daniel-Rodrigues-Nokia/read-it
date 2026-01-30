@@ -92,7 +92,7 @@ func (j *Jira) GetTicket(id string) (string, error) {
 	return "", errors.New("TO BE IMPLEMENTED")
 }
 
-func (j *Jira) CreateIssue(summary, desc string) (string, error) {
+func (j *Jira) CreateXrayTest(summary, desc string) (string, error) {
 	payload := Create{
 		Fields{
 			Project: Project{
@@ -100,7 +100,7 @@ func (j *Jira) CreateIssue(summary, desc string) (string, error) {
 			},
 			Summary: summary,
 			IssueType: IssueType{
-				Name: "Task",
+				Name: "Xray Test",
 			},
 			Description: desc,
 		},
@@ -152,7 +152,7 @@ func (j *Jira) CreateIssue(summary, desc string) (string, error) {
 func (j *Jira) LinkIssues(fromTicket, toTicket string) (string, error) {
 	payload := Link{
 		Type: Type{
-			Name: "Relates", // TODO: Change me ??
+			Name: "Is a test for",
 		},
 		InwardIssue: InwardIssue{
 			Key: fromTicket,
