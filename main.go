@@ -103,19 +103,19 @@ func main() {
 
 	// ------------------------------------------- Phase 4: Create & Link JIRA Tickets ----------------------------------------------
 	// After phase 3, ask for the main ticket to link this test summary to
-	srcTicket, err := ti.NewInput("...", in.CancelCtrl).Start()
+	srcTicket, err := ti.NewInput("ID of the bug/improvement/task...", in.CancelCtrl).Start()
 	if err != nil {
 		in.ThrowError(err.Error())
 	}
 
-	j := ji.NewJira(config.JiraURL, config.JiraProject)
+	j := ji.NewJira(config)
 
 	// now, let's create a queue. This queue will have 2 tasks:
 	// - create a 'test' JIRA ticket
 	// - link it to the main ticket (got from phase 3)
 	firstTask := qu.NewTask("Creating JIRA ticket...", func(m qu.Model) (any, error) {
 		testTitle := fmt.Sprintf("Test for: %s", srcTicket)
-		return j.CreateIssue(testTitle, testValidated, config)
+		return j.CreateIssue(testTitle, testValidated)
 	})
 
 	secondTask := qu.NewTask("Linking Issues...", func(m qu.Model) (any, error) {
@@ -129,7 +129,7 @@ func main() {
 			return nil, errors.New("cannot convert ticketID to string")
 		}
 
-		_, err = j.LinkIssues(srcTicket, destTicket, config)
+		_, err = j.LinkIssues(srcTicket, destTicket)
 
 		return nil, err
 	})

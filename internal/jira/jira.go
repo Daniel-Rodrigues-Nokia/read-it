@@ -18,8 +18,7 @@ import (
 //////////////////////
 
 type Jira struct {
-	url        string
-	projectKey string
+	*internal.Config
 }
 
 type Project struct {
@@ -83,20 +82,21 @@ type Link struct {
 //
 //////////////////////
 
-func NewJira(url, projectKey string) *Jira {
-	return &Jira{url: url, projectKey: projectKey}
+func NewJira(config *internal.Config) *Jira {
+	return &Jira{config}
 }
 
 // TODO:
+
 func (j *Jira) GetTicket(id string) (string, error) {
 	return "", errors.New("TO BE IMPLEMENTED")
 }
 
-func (j *Jira) CreateIssue(summary, desc string, config *internal.Config) (string, error) {
+func (j *Jira) CreateIssue(summary, desc string) (string, error) {
 	payload := Create{
 		Fields{
 			Project: Project{
-				Key: j.projectKey,
+				Key: j.JiraProject,
 			},
 			Summary: summary,
 			IssueType: IssueType{
@@ -127,11 +127,11 @@ func (j *Jira) CreateIssue(summary, desc string, config *internal.Config) (strin
 	}
 
 	// prepare http request
-	req, err := http.NewRequest("POST", j.url+"/rest/api/3/issue", bytes.NewBuffer(body))
+	req, err := http.NewRequest("POST", j.JiraURL+"/rest/api/latest/issue", bytes.NewBuffer(body))
 	if err != nil {
 		return "", err
 	}
-	req.SetBasicAuth(config.JiraEmail, config.JiraAPIKey)
+	req.Header.Add("Bearer ", j.JiraAPIKey)
 	req.Header.Add("Content-Type", "application/json")
 
 	// do the request
@@ -163,7 +163,7 @@ func (j *Jira) CreateIssue(summary, desc string, config *internal.Config) (strin
 	return key, nil
 }
 
-func (j *Jira) LinkIssues(fromTicket, toTicket string, config *internal.Config) (string, error) {
+func (j *Jira) LinkIssues(fromTicket, toTicket string) (string, error) {
 	payload := Link{
 		Type: Type{
 			Name: "Relates", // TODO: Change me ??
@@ -183,11 +183,11 @@ func (j *Jira) LinkIssues(fromTicket, toTicket string, config *internal.Config) 
 	}
 
 	// prepare http request
-	req, err := http.NewRequest("POST", j.url+"/rest/api/3/issueLink", bytes.NewBuffer(body))
+	req, err := http.NewRequest("POST", j.JiraURL+"/rest/api/latest/issueLink", bytes.NewBuffer(body))
 	if err != nil {
 		return "", err
 	}
-	req.SetBasicAuth(config.JiraEmail, config.JiraAPIKey)
+	req.Header.Add("Bearer ", j.JiraAPIKey)
 	req.Header.Add("Content-Type", "application/json")
 
 	// do the request
