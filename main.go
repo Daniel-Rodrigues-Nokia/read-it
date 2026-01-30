@@ -38,6 +38,17 @@ func main() {
 		in.ThrowError(usageMsg)
 	}
 
+	config, err := in.LoadEnv()
+	if err != nil {
+		in.ThrowError(err.Error())
+	}
+
+	// TODO: get proper error message instead of getting it from 'config == nil && err == nil'
+	// this means that app needs to be restarted
+	if config == nil && err == nil {
+		os.Exit(0)
+	}
+
 	// scan file and get tests
 	tests, err := rd.ScanTests(*filePath, rd.Cypress{})
 	if err != nil {
@@ -103,20 +114,14 @@ func main() {
 		in.ThrowError(err.Error())
 	}
 
-	// load JIRA variables
-	loadedVar, err := in.LoadEnv("JIRA_URL", "JIRA_PROJECT")
-	if err != nil {
-		in.ThrowError(errors.New("jira url was not detected in .env file").Error())
-	}
-
-	j := ji.NewJira(loadedVar[0], loadedVar[1])
+	j := ji.NewJira(config.JiraURL, config.JiraProject)
 
 	// now, let's create a queue. This queue will have 2 tasks:
 	// - create a 'test' JIRA ticket
 	// - link it to the main ticket (got from phase 3)
 	firstTask := qu.NewTask("Creating JIRA ticket...", func(m qu.Model) (any, error) {
 		testTitle := fmt.Sprintf("Test for: %s", srcTicket)
-		return j.CreateIssue(testTitle, testValidated)
+		return j.CreateIssue(testTitle, testValidated, config)
 	})
 
 	secondTask := qu.NewTask("Linking Issues...", func(m qu.Model) (any, error) {
@@ -130,7 +135,7 @@ func main() {
 			return nil, errors.New("cannot convert ticketID to string")
 		}
 
-		_, err = j.LinkIssues(srcTicket, destTicket)
+		_, err = j.LinkIssues(srcTicket, destTicket, config)
 
 		return nil, err
 	})

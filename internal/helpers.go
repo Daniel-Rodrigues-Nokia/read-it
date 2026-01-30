@@ -6,8 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"runtime"
-
-	"github.com/joho/godotenv"
 )
 
 const (
@@ -21,20 +19,6 @@ const (
 func ThrowError(msg string) {
 	fmt.Printf("%s\n", fmt.Errorf("[read-it]: %s", msg))
 	os.Exit(1)
-}
-
-func LoadEnv(vars ...string) ([]string, error) {
-	err := godotenv.Load(".env")
-	if err != nil {
-		return nil, err
-	}
-
-	var loadedVars []string
-	for _, v := range vars {
-		loadedVars = append(loadedVars, os.Getenv(v))
-	}
-
-	return loadedVars, nil
 }
 
 func ClearStdOut() {
