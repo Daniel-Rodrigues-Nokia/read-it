@@ -131,7 +131,7 @@ func (j *Jira) CreateIssue(summary, desc string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	req.Header.Add("Bearer ", j.JiraAPIKey)
+	req.Header.Add("Authorization", "Bearer "+j.JiraAPIKey)
 	req.Header.Add("Content-Type", "application/json")
 
 	// do the request
@@ -187,7 +187,7 @@ func (j *Jira) LinkIssues(fromTicket, toTicket string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	req.Header.Add("Bearer ", j.JiraAPIKey)
+	req.Header.Add("Authorization", "Bearer "+j.JiraAPIKey)
 	req.Header.Add("Content-Type", "application/json")
 
 	// do the request
