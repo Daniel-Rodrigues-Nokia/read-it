@@ -46,10 +46,10 @@ type Description struct {
 }
 
 type Fields struct {
-	Project     Project     `json:"project"`
-	Summary     string      `json:"summary"`
-	IssueType   IssueType   `json:"issuetype"`
-	Description Description `json:"description"`
+	Project     Project   `json:"project"`
+	Summary     string    `json:"summary"`
+	IssueType   IssueType `json:"issuetype"`
+	Description string    `json:"description"`
 }
 
 type OutwardIssue struct {
@@ -102,21 +102,7 @@ func (j *Jira) CreateIssue(summary, desc string) (string, error) {
 			IssueType: IssueType{
 				Name: "Task",
 			},
-			Description: Description{
-				Type:    "doc",
-				Version: 1,
-				Content: []Content{
-					{
-						Type: "paragraph",
-						Content: []CContent{
-							{
-								Type: "text",
-								Text: desc,
-							},
-						},
-					},
-				},
-			},
+			Description: desc,
 		},
 	}
 
