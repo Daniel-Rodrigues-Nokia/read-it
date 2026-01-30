@@ -134,8 +134,25 @@ func main() {
 		return nil, err
 	})
 
+	// FIXME:
+	thirdTask := qu.NewTask("Closing Xray ticket...", func(m qu.Model) (any, error) {
+		firstTask, err := m.GetResultFromTask(0)
+		if err != nil {
+			return nil, err
+		}
+
+		xrayTicket, ok := firstTask.Result.(string)
+		if !ok {
+			return nil, errors.New("cannot convert ticketID to string")
+		}
+
+		err = j.TransitionTo(xrayTicket, "Closed")
+
+		return nil, err
+	})
+
 	// 'start' queue
-	_, err = qu.NewQueue(firstTask, secondTask).Start()
+	_, err = qu.NewQueue(firstTask, secondTask, thirdTask).Start()
 	if err != nil {
 		in.ThrowError(err.Error())
 	}
