@@ -113,7 +113,7 @@ func main() {
 	// now, let's create a queue. This queue will have 2 tasks:
 	// - create a 'test' JIRA ticket
 	// - link it to the main ticket (got from phase 3)
-	firstTask := qu.NewTask("Creating JIRA ticket...", func(m qu.Model) (any, error) {
+	firstTask := qu.NewTask("Creating Xray Test...", func(m qu.Model) (any, error) {
 		testTitle := fmt.Sprintf("Test for: %s", srcTicket)
 		return j.CreateXrayTest(testTitle, testValidated)
 	})
