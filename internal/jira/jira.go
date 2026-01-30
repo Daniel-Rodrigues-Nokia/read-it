@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-
 	"read-it/internal"
 )
 
@@ -93,13 +92,7 @@ func (j *Jira) GetTicket(id string) (string, error) {
 	return "", errors.New("TO BE IMPLEMENTED")
 }
 
-func (j *Jira) CreateIssue(summary, desc string) (string, error) {
-	// load env vars
-	loadedVars, err := internal.LoadEnv("JIRA_API_KEY", "JIRA_EMAIL")
-	if err != nil {
-		return "", err
-	}
-
+func (j *Jira) CreateIssue(summary, desc string, config *internal.Config) (string, error) {
 	payload := Create{
 		Fields{
 			Project: Project{
@@ -138,7 +131,7 @@ func (j *Jira) CreateIssue(summary, desc string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	req.SetBasicAuth(loadedVars[1], loadedVars[0])
+	req.SetBasicAuth(config.JiraEmail, config.JiraAPIKey)
 	req.Header.Add("Content-Type", "application/json")
 
 	// do the request
@@ -170,13 +163,7 @@ func (j *Jira) CreateIssue(summary, desc string) (string, error) {
 	return key, nil
 }
 
-func (j *Jira) LinkIssues(fromTicket, toTicket string) (string, error) {
-	// load env vars
-	loadedVars, err := internal.LoadEnv("JIRA_API_KEY", "JIRA_EMAIL")
-	if err != nil {
-		return "", err
-	}
-
+func (j *Jira) LinkIssues(fromTicket, toTicket string, config *internal.Config) (string, error) {
 	payload := Link{
 		Type: Type{
 			Name: "Relates", // TODO: Change me ??
@@ -200,7 +187,7 @@ func (j *Jira) LinkIssues(fromTicket, toTicket string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	req.SetBasicAuth(loadedVars[1], loadedVars[0])
+	req.SetBasicAuth(config.JiraEmail, config.JiraAPIKey)
 	req.Header.Add("Content-Type", "application/json")
 
 	// do the request
