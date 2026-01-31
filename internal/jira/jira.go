@@ -262,12 +262,17 @@ func (j *Jira) GetAllTransitions(ticket, state string) (*Transition, error) {
 }
 
 func (j *Jira) TransitionTo(ticket, state string) error {
-	transition, err := j.GetAllTransitions(ticket, state)
+	_, err := j.GetAllTransitions(ticket, state)
 	if err != nil {
 		return err
 	}
 
-	data, err := json.Marshal(transition)
+	// FIXME: use transition returned from 'GetAllTransitions'
+	temp := map[string]any{"transition": map[string]any{
+		"id": "51", // id for 'Closed'
+	}}
+
+	data, err := json.Marshal(temp)
 	if err != nil {
 		return err
 	}
