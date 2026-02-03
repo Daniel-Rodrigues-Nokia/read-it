@@ -77,12 +77,19 @@ type Link struct {
 	OutwardIssue OutwardIssue `json:"outwardIssue"`
 }
 
+type To struct {
+	Description string `json:"description"`
+	IconURL     string `json:"iconUrl"`
+	ID          string `json:"id"`
+	Self        string `json:"self"`
+}
+
 type Transition struct {
-	ID             string `json:"type"`
+	ID             string `json:"id"`
 	Name           string `json:"name"`
 	Description    string `json:"description"`
 	OpsBarSequence int    `json:"opsbarSequence"`
-	To             any    `json:"to"`
+	To             To     `json:"to"`
 }
 
 type Transitions struct {
@@ -262,17 +269,16 @@ func (j *Jira) GetAllTransitions(ticket, state string) (*Transition, error) {
 }
 
 func (j *Jira) TransitionTo(ticket, state string) error {
-	_, err := j.GetAllTransitions(ticket, state)
+	matchedTransition, err := j.GetAllTransitions(ticket, state)
 	if err != nil {
 		return err
 	}
 
-	// FIXME: use transition returned from 'GetAllTransitions'
-	temp := map[string]any{"transition": map[string]any{
-		"id": "51", // id for 'Closed'
+	transition := map[string]any{"transition": map[string]string{
+		"id": matchedTransition.ID, // id for 'Closed'
 	}}
 
-	data, err := json.Marshal(temp)
+	data, err := json.Marshal(transition)
 	if err != nil {
 		return err
 	}

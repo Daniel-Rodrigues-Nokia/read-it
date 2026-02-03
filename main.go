@@ -8,7 +8,6 @@ import (
 	"os"
 
 	in "read-it/internal"
-	ai "read-it/internal/ai"
 	qu "read-it/internal/components/queue"
 	sl "read-it/internal/components/selector"
 	sp "read-it/internal/components/spinner"
@@ -77,10 +76,13 @@ func main() {
 	}
 
 	// ('getting the summary' only starts here)
-	resp, err := ai.AISummary(instructions, []string{tests[optionsChosen].PrintItem()}, ai.Copilot{})
-	if err != nil {
-		in.ThrowError(err.Error())
-	}
+	// resp, err := ai.AISummary(instructions, []string{tests[optionsChosen].PrintItem()}, ai.Copilot{})
+	// if err != nil {
+	// 	in.ThrowError(err.Error())
+	// }
+
+	resp := new([]string)
+	*resp = append(*resp, "test")
 
 	spinner.Stop()
 	in.ClearStdOut()
@@ -134,7 +136,6 @@ func main() {
 		return nil, err
 	})
 
-	// FIXME:
 	thirdTask := qu.NewTask("Closing Xray ticket...", func(m qu.Model) (any, error) {
 		firstTask, err := m.GetResultFromTask(0)
 		if err != nil {
