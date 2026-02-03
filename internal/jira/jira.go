@@ -9,6 +9,7 @@ import (
 	"io"
 	"net/http"
 	"read-it/internal"
+	"strings"
 )
 
 //////////////////////
@@ -18,8 +19,7 @@ import (
 //////////////////////
 
 type Jira struct {
-	url        string
-	projectKey string
+	*internal.Config
 }
 
 type Project struct {
@@ -47,10 +47,10 @@ type Description struct {
 }
 
 type Fields struct {
-	Project     Project     `json:"project"`
-	Summary     string      `json:"summary"`
-	IssueType   IssueType   `json:"issuetype"`
-	Description Description `json:"description"`
+	Project     Project   `json:"project"`
+	Summary     string    `json:"summary"`
+	IssueType   IssueType `json:"issuetype"`
+	Description string    `json:"description"`
 }
 
 type OutwardIssue struct {
@@ -77,46 +77,53 @@ type Link struct {
 	OutwardIssue OutwardIssue `json:"outwardIssue"`
 }
 
+type To struct {
+	Description string `json:"description"`
+	IconURL     string `json:"iconUrl"`
+	ID          string `json:"id"`
+	Self        string `json:"self"`
+}
+
+type Transition struct {
+	ID             string `json:"id"`
+	Name           string `json:"name"`
+	Description    string `json:"description"`
+	OpsBarSequence int    `json:"opsbarSequence"`
+	To             To     `json:"to"`
+}
+
+type Transitions struct {
+	Expand      string       `json:"type"`
+	Transitions []Transition `json:"transitions"`
+}
+
 //////////////////////
 //
 // Public API
 //
 //////////////////////
 
-func NewJira(url, projectKey string) *Jira {
-	return &Jira{url: url, projectKey: projectKey}
+func NewJira(config *internal.Config) *Jira {
+	return &Jira{config}
 }
 
 // TODO:
+
 func (j *Jira) GetTicket(id string) (string, error) {
 	return "", errors.New("TO BE IMPLEMENTED")
 }
 
-func (j *Jira) CreateIssue(summary, desc string, config *internal.Config) (string, error) {
+func (j *Jira) CreateXrayTest(summary, desc string) (string, error) {
 	payload := Create{
 		Fields{
 			Project: Project{
-				Key: j.projectKey,
+				Key: j.JiraProject,
 			},
 			Summary: summary,
 			IssueType: IssueType{
-				Name: "Task",
+				Name: "Xray Test",
 			},
-			Description: Description{
-				Type:    "doc",
-				Version: 1,
-				Content: []Content{
-					{
-						Type: "paragraph",
-						Content: []CContent{
-							{
-								Type: "text",
-								Text: desc,
-							},
-						},
-					},
-				},
-			},
+			Description: desc,
 		},
 	}
 
@@ -127,11 +134,11 @@ func (j *Jira) CreateIssue(summary, desc string, config *internal.Config) (strin
 	}
 
 	// prepare http request
-	req, err := http.NewRequest("POST", j.url+"/rest/api/3/issue", bytes.NewBuffer(body))
+	req, err := http.NewRequest("POST", j.JiraURL+"/rest/api/latest/issue", bytes.NewBuffer(body))
 	if err != nil {
 		return "", err
 	}
-	req.SetBasicAuth(config.JiraEmail, config.JiraAPIKey)
+	req.Header.Add("Authorization", "Bearer "+j.JiraAPIKey)
 	req.Header.Add("Content-Type", "application/json")
 
 	// do the request
@@ -163,10 +170,10 @@ func (j *Jira) CreateIssue(summary, desc string, config *internal.Config) (strin
 	return key, nil
 }
 
-func (j *Jira) LinkIssues(fromTicket, toTicket string, config *internal.Config) (string, error) {
+func (j *Jira) LinkIssues(fromTicket, toTicket string) (string, error) {
 	payload := Link{
 		Type: Type{
-			Name: "Relates", // TODO: Change me ??
+			Name: "Is a test for",
 		},
 		InwardIssue: InwardIssue{
 			Key: fromTicket,
@@ -183,11 +190,11 @@ func (j *Jira) LinkIssues(fromTicket, toTicket string, config *internal.Config) 
 	}
 
 	// prepare http request
-	req, err := http.NewRequest("POST", j.url+"/rest/api/3/issueLink", bytes.NewBuffer(body))
+	req, err := http.NewRequest("POST", j.JiraURL+"/rest/api/latest/issueLink", bytes.NewBuffer(body))
 	if err != nil {
 		return "", err
 	}
-	req.SetBasicAuth(config.JiraEmail, config.JiraAPIKey)
+	req.Header.Add("Authorization", "Bearer "+j.JiraAPIKey)
 	req.Header.Add("Content-Type", "application/json")
 
 	// do the request
@@ -215,4 +222,97 @@ func (j *Jira) LinkIssues(fromTicket, toTicket string, config *internal.Config) 
 	}
 
 	return "", errors.New("reached impossible dead end. Aborting")
+}
+
+func (j *Jira) GetAllTransitions(ticket, state string) (*Transition, error) {
+	req, err := http.NewRequest("GET", j.JiraURL+"/rest/api/latest/issue/"+ticket+"/transitions", nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Add("Authorization", "Bearer "+j.JiraAPIKey)
+	req.Header.Add("Content-Type", "application/json")
+
+	// do the request
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	// decode data
+	var content Transitions
+
+	err = json.NewDecoder(resp.Body).Decode(&content)
+	if err != nil {
+		return nil, err
+	}
+
+	// if error status code, throw error
+	if resp.StatusCode >= 300 {
+		return nil, fmt.Errorf("failed to get transitions\n%v", content)
+	}
+
+	var matchedTransition Transition
+
+	for _, v := range content.Transitions {
+		if strings.EqualFold(v.Name, state) {
+			matchedTransition = v
+			break
+		}
+	}
+
+	if matchedTransition.Name == "" {
+		return nil, fmt.Errorf("failed to find transition state %s", state)
+	}
+
+	return &matchedTransition, nil
+}
+
+func (j *Jira) TransitionTo(ticket, state string) error {
+	matchedTransition, err := j.GetAllTransitions(ticket, state)
+	if err != nil {
+		return err
+	}
+
+	transition := map[string]any{"transition": map[string]string{
+		"id": matchedTransition.ID, // id for 'Closed'
+	}}
+
+	data, err := json.Marshal(transition)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("POST", j.JiraURL+"/rest/api/latest/issue/"+ticket+"/transitions", bytes.NewBuffer(data))
+	if err != nil {
+		return err
+	}
+	req.Header.Add("Authorization", "Bearer "+j.JiraAPIKey)
+	req.Header.Add("Content-Type", "application/json")
+
+	// do the request
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// If success and no body expected, stop here
+	if resp.StatusCode == http.StatusCreated || resp.StatusCode == http.StatusNoContent {
+		// Transitioning issues doesn’t return a key, so return success
+		return nil
+	}
+
+	// Otherwise try to decode response (error case)
+	var content map[string]any
+	if err := json.NewDecoder(resp.Body).Decode(&content); err != nil && err != io.EOF {
+		return err
+	}
+
+	// Handle Jira API errors
+	if resp.StatusCode >= 300 {
+		return fmt.Errorf("failed to link issues: %v", content)
+	}
+
+	return errors.New("reached impossible dead end. Aborting")
 }
