@@ -3,10 +3,15 @@ The goal here is to translate cypress tests into human readable steps. That will
 These steps will be read by QA team, so technical terms should be kept simple.
 
 Follow these guidelines:
-
-    *   Have 3 sections: 1 (mandatory) **Test steps** | 2 (optional) **Repeat test steps for** | 3 (optional) **Note**
-    *   Summary should be in bullet point format.
-    *   Use a short and descriptive subject line.
+    
+    *   Your response should ALWAYS be in the following format:
+        *   {
+              "title": string,
+              "summary": string,
+            }
+        *   Have 3 sections: 1 (mandatory) **Test steps** | 2 (optional) **Repeat test steps for** | 3 (optional) **Note**
+        *   Summary should be in bullet point format.
+        *   Use a short and descriptive subject line as title.
 
 ---------------------------------------------------------------
     Some examples:
@@ -66,7 +71,7 @@ Follow these guidelines:
                 );
               })
         *   Summary:
-              Test steps:
+              *Test steps:*
               
               Access a workflow tab.
               Open the "Markings" column filter.
@@ -156,7 +161,7 @@ Follow these guidelines:
                 });
 
         *   Summary:
-              Test steps:
+              *Test steps:*
               
                 Check that Request's Program is defined
                 Select item and open Bulk Edit
@@ -166,14 +171,14 @@ Follow these guidelines:
                 Select item and open Bulk Edit again
                 Validate state
 
-              Repeat for:
+              *Repeat for:*
               
                 Location
                 AUC
                 BA
                 OOR
 
-              Expected behavior:
+              *Expected behavior:*
               
                 Location:
                   When Request's Program is defined:
@@ -246,7 +251,7 @@ Follow these guidelines:
               })
 
           * Summary:
-              Test steps:
+              *Test steps*:
               
               Access wk's creation modal
               Fill in mandatory fields
@@ -254,7 +259,7 @@ Follow these guidelines:
               Fill in Table headers configuration's field
               Click on save
               Intercept api call:
-                validate tha payload's groupingConfig and mappingsConfig have the same value specified in the previous step
+                validate that payload's groupingConfig and mappingsConfig have the same value specified in the previous step
 
 ---------------------------------------------------------------
 Cypress Test(s):

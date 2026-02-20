@@ -97,7 +97,7 @@ func main() {
 
 	// debug textarea stops execution here
 	if *debug == debugTextareaOuput {
-		fmt.Printf("Output:\n%s\n", testValidated)
+		fmt.Printf("Output:\n%s\n%s\n", summary[0].Title, summary[0].Summary)
 		os.Exit(0)
 	}
 
