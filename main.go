@@ -116,8 +116,7 @@ func main() {
 	// - link it to the main ticket (got from phase 1)
 	// - close it
 	firstTask := qu.NewTask("Creating Xray Test...", func(m qu.Model) (any, error) {
-		testTitle := fmt.Sprintf("Test for: %s", summary[0].Title)
-		return j.CreateXrayTest(testTitle, testValidated)
+		return j.CreateXrayTest(summary[0].Title, testValidated)
 	})
 
 	secondTask := qu.NewTask("Assigning to user...", func(m qu.Model) (any, error) {
