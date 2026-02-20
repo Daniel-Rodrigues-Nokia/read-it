@@ -41,9 +41,9 @@ Options:
 
 ## TODO:
 
-- [ ] Improve JIRA step by:
+- [x] Improve JIRA step by:
   - [x] ~~Assigning JIRA test ticket to its creator~~
   - [x] ~~Automatically closing JIRA test ticket~~
-  - [ ] Use 'Subject' as ticket's title
-- [ ] Improve 'instructions.txt' to use proper formatting (bullet points)
+  - [x] ~~Use 'Subject' as ticket's title~~
+- [x] Improve 'instructions.txt' to use proper formatting (bullet points)
 - [ ] Gracefully handle errors

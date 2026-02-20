@@ -90,14 +90,14 @@ func main() {
 	// and make changes if needed
 
 	summary := *resp
-	testValidated, err := ta.NewTextarea(summary[0]).Start()
+	testValidated, err := ta.NewTextarea(summary[0].Summary).Start()
 	if err != nil {
 		in.ThrowError(err.Error())
 	}
 
 	// debug textarea stops execution here
 	if *debug == debugTextareaOuput {
-		fmt.Printf("Output:\n%s\n", testValidated)
+		fmt.Printf("Output:\n%s\n%s\n", summary[0].Title, summary[0].Summary)
 		os.Exit(0)
 	}
 
@@ -116,8 +116,7 @@ func main() {
 	// - link it to the main ticket (got from phase 1)
 	// - close it
 	firstTask := qu.NewTask("Creating Xray Test...", func(m qu.Model) (any, error) {
-		testTitle := fmt.Sprintf("Test for: %s", srcTicket)
-		return j.CreateXrayTest(testTitle, testValidated)
+		return j.CreateXrayTest(summary[0].Title, testValidated)
 	})
 
 	secondTask := qu.NewTask("Assigning to user...", func(m qu.Model) (any, error) {

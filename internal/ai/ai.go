@@ -5,8 +5,13 @@ import (
 	"strings"
 )
 
+type Summary struct {
+	Title   string `json:"title"`
+	Summary string `json:"summary"`
+}
+
 type AiClient interface {
-	Summarize(instructions string, tests []string) (*[]string, error)
+	Summarize(instructions string, tests []string) (*[]Summary, error)
 }
 
 ////////////
@@ -15,7 +20,7 @@ type AiClient interface {
 //
 ////////////
 
-func AISummary(instructions string, tests []string, ai AiClient) (*[]string, error) {
+func AISummary(instructions string, tests []string, ai AiClient) (*[]Summary, error) {
 	resp, err := ai.Summarize(instructions, tests)
 	if err != nil {
 		return nil, err
