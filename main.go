@@ -110,15 +110,33 @@ func main() {
 
 	j := ji.NewJira(config)
 
-	// now, let's create a queue. This queue will have 2 tasks:
+	// now, let's create a queue. This queue will have 4 tasks:
 	// - create a 'test' JIRA ticket
-	// - link it to the main ticket (got from phase 3)
+	// - assing it to the user
+	// - link it to the main ticket (got from phase 1)
+	// - close it
 	firstTask := qu.NewTask("Creating Xray Test...", func(m qu.Model) (any, error) {
 		testTitle := fmt.Sprintf("Test for: %s", srcTicket)
 		return j.CreateXrayTest(testTitle, testValidated)
 	})
 
-	secondTask := qu.NewTask("Linking Issues...", func(m qu.Model) (any, error) {
+	secondTask := qu.NewTask("Assigning to user...", func(m qu.Model) (any, error) {
+		firstTask, err := m.GetResultFromTask(0)
+		if err != nil {
+			return nil, err
+		}
+
+		destTicket, ok := firstTask.Result.(string)
+		if !ok {
+			return nil, errors.New("cannot convert ticketID to string")
+		}
+
+		err = j.AssignTicket(config.JiraUser, destTicket)
+
+		return nil, err
+	})
+
+	thirdTask := qu.NewTask("Linking Issues...", func(m qu.Model) (any, error) {
 		firstTask, err := m.GetResultFromTask(0)
 		if err != nil {
 			return nil, err
@@ -134,7 +152,7 @@ func main() {
 		return nil, err
 	})
 
-	thirdTask := qu.NewTask("Closing Xray ticket...", func(m qu.Model) (any, error) {
+	fourthTask := qu.NewTask("Closing Xray ticket...", func(m qu.Model) (any, error) {
 		firstTask, err := m.GetResultFromTask(0)
 		if err != nil {
 			return nil, err
@@ -151,7 +169,7 @@ func main() {
 	})
 
 	// 'start' queue
-	_, err = qu.NewQueue(firstTask, secondTask, thirdTask).Start()
+	_, err = qu.NewQueue(firstTask, secondTask, thirdTask, fourthTask).Start()
 	if err != nil {
 		in.ThrowError(err.Error())
 	}
