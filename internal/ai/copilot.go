@@ -1,6 +1,7 @@
 package ai
 
 import (
+	"encoding/json"
 	"errors"
 	"os/exec"
 	"time"
@@ -15,7 +16,7 @@ type Copilot struct {
 
 const defaultModel = "gpt-4.1"
 
-func (cp Copilot) Summarize(instructions string, tests []string) (*[]string, error) {
+func (cp Copilot) Summarize(instructions string, tests []string) (*[]Summary, error) {
 	if !isCopilotInstalled() {
 		return nil, errors.New("copilot cli was not detected in your system. Please install it first")
 	}
@@ -46,7 +47,13 @@ func (cp Copilot) Summarize(instructions string, tests []string) (*[]string, err
 		return nil, err
 	}
 
-	return &[]string{*response.Data.Content}, nil
+	summary := Summary{}
+	err = json.Unmarshal([]byte(*response.Data.Content), &summary)
+	if err != nil {
+		return nil, err
+	}
+
+	return &[]Summary{summary}, nil
 }
 
 func isCopilotInstalled() bool {

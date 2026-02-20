@@ -90,7 +90,7 @@ func main() {
 	// and make changes if needed
 
 	summary := *resp
-	testValidated, err := ta.NewTextarea(summary[0]).Start()
+	testValidated, err := ta.NewTextarea(summary[0].Summary).Start()
 	if err != nil {
 		in.ThrowError(err.Error())
 	}
@@ -116,7 +116,7 @@ func main() {
 	// - link it to the main ticket (got from phase 1)
 	// - close it
 	firstTask := qu.NewTask("Creating Xray Test...", func(m qu.Model) (any, error) {
-		testTitle := fmt.Sprintf("Test for: %s", srcTicket)
+		testTitle := fmt.Sprintf("Test for: %s", summary[0].Title)
 		return j.CreateXrayTest(testTitle, testValidated)
 	})
 
