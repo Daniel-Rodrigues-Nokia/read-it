@@ -131,7 +131,7 @@ func main() {
 			return nil, errors.New("cannot convert ticketID to string")
 		}
 
-		err = j.AssignTicket(config.JiraEmail, destTicket)
+		err = j.AssignTicket(config.JiraUser, destTicket)
 
 		return nil, err
 	})

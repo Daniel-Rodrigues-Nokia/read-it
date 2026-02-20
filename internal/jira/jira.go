@@ -165,8 +165,8 @@ func (j *Jira) CreateXrayTest(summary, desc string) (string, error) {
 	return key, nil
 }
 
-func (j *Jira) AssignTicket(email, ticket string) error {
-	payload := map[string]string{"emailAddress": email}
+func (j *Jira) AssignTicket(username, ticket string) error {
+	payload := map[string]string{"name": username}
 
 	// convert payload to bytes
 	body, err := json.Marshal(payload)
@@ -175,7 +175,7 @@ func (j *Jira) AssignTicket(email, ticket string) error {
 	}
 
 	// prepare http request
-	req, err := http.NewRequest("POST", j.JiraURL+"/rest/api/latest/issue/"+ticket+"/assignee", bytes.NewBuffer(body))
+	req, err := http.NewRequest("PUT", j.JiraURL+"/rest/api/latest/issue/"+ticket+"/assignee", bytes.NewBuffer(body))
 	if err != nil {
 		return err
 	}
