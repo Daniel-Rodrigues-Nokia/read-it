@@ -39,9 +39,9 @@ Options:
 				          textarea:   After reviewing AI summary, print the final output and exit.
 ```
 
-
 ## TODO:
+
 - [ ] Improve JIRA step by:
   - [ ] Assigning JIRA test ticket to its creator
-  - [ ] Automatically closing JIRA test ticket
+  - [x] Automatically closing JIRA test ticket
 - [ ] Gracefully handle errors
