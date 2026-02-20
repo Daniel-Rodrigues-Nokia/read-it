@@ -8,8 +8,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"read-it/internal"
 	"strings"
+
+	"read-it/internal"
 )
 
 //////////////////////
@@ -106,8 +107,6 @@ type Transitions struct {
 func NewJira(config *internal.Config) *Jira {
 	return &Jira{config}
 }
-
-// TODO:
 
 func (j *Jira) GetTicket(id string) (string, error) {
 	return "", errors.New("TO BE IMPLEMENTED")
