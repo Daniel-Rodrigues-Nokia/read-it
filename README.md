@@ -41,7 +41,7 @@ Options:
 
 ## TODO:
 
-- [x] Improve JIRA step by:
+- [x] ~~Improve JIRA step by:~~
   - [x] ~~Assigning JIRA test ticket to its creator~~
   - [x] ~~Automatically closing JIRA test ticket~~
   - [x] ~~Use 'Subject' as ticket's title~~
