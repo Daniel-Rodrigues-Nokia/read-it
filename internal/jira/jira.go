@@ -165,6 +165,50 @@ func (j *Jira) CreateXrayTest(summary, desc string) (string, error) {
 	return key, nil
 }
 
+func (j *Jira) AssignTicket(email, ticket string) error {
+	payload := map[string]string{"emailAddress": email}
+
+	// convert payload to bytes
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+
+	// prepare http request
+	req, err := http.NewRequest("POST", j.JiraURL+"/rest/api/latest/issue/"+ticket+"/assignee", bytes.NewBuffer(body))
+	if err != nil {
+		return err
+	}
+	req.Header.Add("Authorization", "Bearer "+j.JiraAPIKey)
+	req.Header.Add("Content-Type", "application/json")
+
+	// do the request
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// If success and no body expected, stop here
+	if resp.StatusCode == http.StatusCreated || resp.StatusCode == http.StatusNoContent {
+		// Transitioning issues doesn’t return a key, so return success
+		return nil
+	}
+
+	// Otherwise try to decode response (error case)
+	var content map[string]any
+	if err := json.NewDecoder(resp.Body).Decode(&content); err != nil && err != io.EOF {
+		return err
+	}
+
+	// Handle Jira API errors
+	if resp.StatusCode >= 300 {
+		return fmt.Errorf("failed to link issues: %v", content)
+	}
+
+	return errors.New("reached impossible dead end. Aborting")
+}
+
 func (j *Jira) LinkIssues(fromTicket, toTicket string) (string, error) {
 	payload := Link{
 		Type: Type{
