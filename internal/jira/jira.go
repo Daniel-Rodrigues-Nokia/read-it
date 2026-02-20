@@ -108,10 +108,6 @@ func NewJira(config *internal.Config) *Jira {
 	return &Jira{config}
 }
 
-func (j *Jira) GetTicket(id string) (string, error) {
-	return "", errors.New("TO BE IMPLEMENTED")
-}
-
 func (j *Jira) CreateXrayTest(summary, desc string) (string, error) {
 	payload := Create{
 		Fields{
