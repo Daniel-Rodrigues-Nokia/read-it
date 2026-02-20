@@ -45,5 +45,5 @@ Options:
   - [x] ~~Assigning JIRA test ticket to its creator~~
   - [x] ~~Automatically closing JIRA test ticket~~
   - [x] ~~Use 'Subject' as ticket's title~~
-- [x] Improve 'instructions.txt' to use proper formatting (bullet points)
+- [x] ~~Improve 'instructions.txt' to use proper formatting (bullet points)~~
 - [ ] Gracefully handle errors
