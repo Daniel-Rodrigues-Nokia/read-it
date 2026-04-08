@@ -1,10 +1,10 @@
 package ai
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"os/exec"
-	"time"
 
 	copilot "github.com/github/copilot-sdk/go"
 )
@@ -22,7 +22,7 @@ func (cp Copilot) Summarize(instructions string, tests []string) (*[]Summary, er
 	}
 
 	client := copilot.NewClient(nil)
-	if err := client.Start(); err != nil {
+	if err := client.Start(context.Background()); err != nil {
 		return nil, err
 	}
 	defer client.Stop()
@@ -32,7 +32,10 @@ func (cp Copilot) Summarize(instructions string, tests []string) (*[]Summary, er
 		cp.Model = defaultModel
 	}
 
-	session, err := client.CreateSession(&copilot.SessionConfig{Model: cp.Model})
+	session, err := client.CreateSession(context.Background(), &copilot.SessionConfig{
+		Model:               cp.Model,
+		OnPermissionRequest: copilot.PermissionHandler.ApproveAll,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +45,7 @@ func (cp Copilot) Summarize(instructions string, tests []string) (*[]Summary, er
 		return nil, err
 	}
 
-	response, err := session.SendAndWait(copilot.MessageOptions{Prompt: promp.String()}, time.Duration(cp.Timeout))
+	response, err := session.SendAndWait(context.Background(), copilot.MessageOptions{Prompt: promp.String()})
 	if err != nil {
 		return nil, err
 	}
