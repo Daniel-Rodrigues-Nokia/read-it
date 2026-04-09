@@ -88,16 +88,23 @@ func main() {
 	// After that, let's get AI to summarize it
 	// while we wait, we get a nice spinner animation :)
 	spinner, err := sp.NewSpinner(fmt.Sprintf("Generating summary with %s...", ag.GetName()), in.CancelCtrl).Start()
+	defer func() {
+		if r := recover(); r != nil {
+			spinner.Stop()
+			in.ClearStdOut()
+		}
+	}()
+
 	if err != nil {
 		_ = logger.Log(err.Error())
-		os.Exit(1)
+		panic(1)
 	}
 
 	// ('getting the summary' only starts here)
 	resp, err := ai.AISummary(instructions, []string{tests[optionsChosen].PrintItem()}, ag)
 	if err != nil {
 		_ = logger.Log(err.Error())
-		os.Exit(1)
+		panic(1)
 	}
 
 	spinner.Stop()
