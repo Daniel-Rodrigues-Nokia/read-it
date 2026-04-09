@@ -9,6 +9,7 @@ Follow these guidelines:
               "title": string,
               "summary": string,
             }
+        *   Do NOT include ```json in response.
         *   Have 3 sections: 1 (mandatory) **Test steps** | 2 (optional) **Repeat test steps for** | 3 (optional) **Note**
         *   Summary should be in bullet point format.
         *   Use a short and descriptive subject line as title.
