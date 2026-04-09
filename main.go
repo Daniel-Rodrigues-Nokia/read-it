@@ -81,7 +81,7 @@ func main() {
 	// ----------------------------------------------- Phase 2: Get AI to summarize them -----------------------------------------------
 	// After that, let's get AI to summarize it
 	// while we wait, we get a nice spinner animation :)
-	spinner, err := sp.NewSpinner("Generating summary...", in.CancelCtrl).Start()
+	spinner, err := sp.NewSpinner(fmt.Sprintf("Generating summary with %s...", ag.GetName()), in.CancelCtrl).Start()
 	if err != nil {
 		in.ThrowError(err.Error())
 	}

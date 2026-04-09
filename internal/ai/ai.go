@@ -11,6 +11,7 @@ type Summary struct {
 }
 
 type AiClient interface {
+	GetName() string
 	Summarize(instructions string, tests []string) (*[]Summary, error)
 }
 
