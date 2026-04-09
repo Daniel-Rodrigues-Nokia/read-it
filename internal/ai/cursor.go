@@ -9,7 +9,7 @@ import (
 
 type Cursor struct{}
 
-func (c *Cursor) Summarize(instructions string, tests []string) (*[]Summary, error) {
+func (c Cursor) Summarize(instructions string, tests []string) (*[]Summary, error) {
 	if !isCursorInstalled() {
 		return nil, errors.New("cursor cli was not detected in your system. Please install it first")
 	}

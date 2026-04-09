@@ -24,10 +24,14 @@ var instructions string
 const (
 	debugTestSelection = "selection"
 	debugTextareaOuput = "textarea"
+
+	agentCopilot = "copilot"
+	agentCursor  = "cursor"
 )
 
 func main() {
 	filePath := flag.String("f", "", "path to file")
+	agent := flag.String("a", agentCopilot, "agent to use: copilot | cursor")
 	debug := flag.String("debug", "", "debug")
 
 	flag.Parse()
@@ -36,6 +40,12 @@ func main() {
 	if *filePath == "" {
 		usageMsg := in.GetUsageMsg()
 		in.ThrowError(usageMsg)
+	}
+
+	// get agent
+	var ag ai.AiClient = ai.Copilot{}
+	if *agent == agentCursor {
+		ag = ai.Cursor{}
 	}
 
 	config, err := in.LoadEnv()
@@ -77,7 +87,7 @@ func main() {
 	}
 
 	// ('getting the summary' only starts here)
-	resp, err := ai.AISummary(instructions, []string{tests[optionsChosen].PrintItem()}, ai.Copilot{})
+	resp, err := ai.AISummary(instructions, []string{tests[optionsChosen].PrintItem()}, ag)
 	if err != nil {
 		in.ThrowError(err.Error())
 	}

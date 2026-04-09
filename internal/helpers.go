@@ -64,6 +64,7 @@ Usage: read-it [options]
 
 Options:
 	-f <file>	Path to cypress test file
+	-a <agent>	Agent to use: copilot | cursor. Default = copilot
 	-debug <mode>	Enable debug output and stop execution early.
 			Available modes:
 				* selection:	After choosing a test, print the selected test details and exit.
