@@ -3,6 +3,7 @@ package internal
 import (
 	"fmt"
 	"os"
+	"strings"
 )
 
 type log struct {
@@ -26,7 +27,13 @@ func (l log) Log(msg string) error {
 	}
 	defer f.Close()
 
-	if _, err := f.WriteString(msg); err != nil {
+	buffer := strings.Builder{}
+
+	buffer.WriteString("\n---------------\n")
+	buffer.WriteString(msg)
+	buffer.WriteString("\n---------------\n")
+
+	if _, err := f.WriteString(buffer.String()); err != nil {
 		return err
 	}
 

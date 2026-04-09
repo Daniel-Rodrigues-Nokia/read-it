@@ -39,8 +39,11 @@ func main() {
 	// no file path ? throw error
 	if *filePath == "" {
 		usageMsg := in.GetUsageMsg()
+		// TODO:
 		in.ThrowError(usageMsg)
 	}
+
+	logger := in.NewLog()
 
 	// get agent
 	var ag ai.AiClient = ai.Copilot{}
@@ -50,13 +53,15 @@ func main() {
 
 	config, err := in.LoadEnv()
 	if err != nil {
-		in.ThrowError(err.Error())
+		_ = logger.Log(err.Error())
+		os.Exit(1)
 	}
 
 	// scan file and get tests
 	tests, err := rd.ScanTests(*filePath, rd.Cypress{})
 	if err != nil {
-		in.ThrowError(err.Error())
+		_ = logger.Log(err.Error())
+		os.Exit(1)
 	}
 
 	// ------------------------------------------------------- Phase 1: Get tests ------------------------------------------------------
@@ -64,7 +69,8 @@ func main() {
 	// return the index of the chosen option
 	optionsChosen, err := sl.NewSelector(tests, "Choose tests to summarize").Start()
 	if err != nil {
-		in.ThrowError(err.Error())
+		_ = logger.Log(err.Error())
+		os.Exit(1)
 	}
 
 	// ExitOption ? Then abort this whole thing
@@ -83,13 +89,15 @@ func main() {
 	// while we wait, we get a nice spinner animation :)
 	spinner, err := sp.NewSpinner(fmt.Sprintf("Generating summary with %s...", ag.GetName()), in.CancelCtrl).Start()
 	if err != nil {
-		in.ThrowError(err.Error())
+		_ = logger.Log(err.Error())
+		os.Exit(1)
 	}
 
 	// ('getting the summary' only starts here)
 	resp, err := ai.AISummary(instructions, []string{tests[optionsChosen].PrintItem()}, ag)
 	if err != nil {
-		in.ThrowError(err.Error())
+		_ = logger.Log(err.Error())
+		os.Exit(1)
 	}
 
 	spinner.Stop()
@@ -102,7 +110,8 @@ func main() {
 	summary := *resp
 	testValidated, err := ta.NewTextarea(summary[0].Summary).Start()
 	if err != nil {
-		in.ThrowError(err.Error())
+		_ = logger.Log(err.Error())
+		os.Exit(1)
 	}
 
 	// debug textarea stops execution here
@@ -115,7 +124,8 @@ func main() {
 	// After phase 3, ask for the main ticket to link this test summary to
 	srcTicket, err := ti.NewInput("ID of the bug/improvement/task...", in.CancelCtrl).Start()
 	if err != nil {
-		in.ThrowError(err.Error())
+		_ = logger.Log(err.Error())
+		os.Exit(1)
 	}
 
 	j := ji.NewJira(config)
@@ -180,7 +190,8 @@ func main() {
 	// 'start' queue
 	_, err = qu.NewQueue(firstTask, secondTask, thirdTask, fourthTask).Start()
 	if err != nil {
-		in.ThrowError(err.Error())
+		_ = logger.Log(err.Error())
+		os.Exit(1)
 	}
 
 	os.Exit(0)
