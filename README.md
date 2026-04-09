@@ -1,4 +1,4 @@
-# read-it (wip)
+# read-it
 
 `read-it` is a small, self-hosted command-line TUI ([bubbletea](https://github.com/charmbracelet/bubbletea)) tool written in Go.  
 Its purpose is to help developers browse Cypress test files, pick a test, automatically generate a summary via an LLM (using your API key), review/adjust the summary, and then create a Jira “test” ticket linked to a bug or improvement.
@@ -33,6 +33,7 @@ Usage: read-it [options]
 
 Options:
 	-f <file>	    Path to cypress test file
+	-a <agent>	Agent to use: copilot | cursor. Default = copilot
 	-debug <mode>	Enable debug output and stop execution early.
 			          Available modes:
 				          selection:  After choosing a test, print the selected test details and exit.
