@@ -16,6 +16,10 @@ type Copilot struct {
 
 const defaultModel = "gpt-4.1"
 
+func (cp Copilot) GetName() string {
+	return "Copilot"
+}
+
 func (cp Copilot) Summarize(instructions string, tests []string) (*[]Summary, error) {
 	if !isCopilotInstalled() {
 		return nil, errors.New("copilot cli was not detected in your system. Please install it first")

@@ -24,10 +24,14 @@ var instructions string
 const (
 	debugTestSelection = "selection"
 	debugTextareaOuput = "textarea"
+
+	agentCopilot = "copilot"
+	agentCursor  = "cursor"
 )
 
 func main() {
 	filePath := flag.String("f", "", "path to file")
+	agent := flag.String("a", agentCopilot, "agent to use: copilot | cursor")
 	debug := flag.String("debug", "", "debug")
 
 	flag.Parse()
@@ -36,6 +40,12 @@ func main() {
 	if *filePath == "" {
 		usageMsg := in.GetUsageMsg()
 		in.ThrowError(usageMsg)
+	}
+
+	// get agent
+	var ag ai.AiClient = ai.Copilot{}
+	if *agent == agentCursor {
+		ag = ai.Cursor{}
 	}
 
 	config, err := in.LoadEnv()
@@ -71,13 +81,13 @@ func main() {
 	// ----------------------------------------------- Phase 2: Get AI to summarize them -----------------------------------------------
 	// After that, let's get AI to summarize it
 	// while we wait, we get a nice spinner animation :)
-	spinner, err := sp.NewSpinner("Generating summary...", in.CancelCtrl).Start()
+	spinner, err := sp.NewSpinner(fmt.Sprintf("Generating summary with %s...", ag.GetName()), in.CancelCtrl).Start()
 	if err != nil {
 		in.ThrowError(err.Error())
 	}
 
 	// ('getting the summary' only starts here)
-	resp, err := ai.AISummary(instructions, []string{tests[optionsChosen].PrintItem()}, ai.Copilot{})
+	resp, err := ai.AISummary(instructions, []string{tests[optionsChosen].PrintItem()}, ag)
 	if err != nil {
 		in.ThrowError(err.Error())
 	}
