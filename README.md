@@ -18,6 +18,7 @@ Its purpose is to help developers browse Cypress test files, pick a test, automa
 - After confirmation, creates a new “test” ticket in Jira and links it to an existing ticket (bug, improvement, etc.)
 
 ## Download & Run
+
 Download the latest version from the [Releases](https://github.com/Daniel-Rodrigues-Nokia/read-it/releases) page.
 
 ## Requirements
@@ -82,4 +83,5 @@ Options:
   - [x] ~~Use 'Subject' as ticket's title~~
 - [x] ~~Improve 'instructions.txt' to use proper formatting (bullet points)~~
 - [x] ~~Support Cursor~~
-- [ ] Gracefully handle errors
+- [x] ~~Gracefully handle errors~~
+- [ ] Multiple test selection
