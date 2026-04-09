@@ -9,4 +9,4 @@ fmt: clean
 vet: fmt
 				go vet ./...
 build: vet
-				go build -o read-it 
+				go build -o bin/read-it 
