@@ -11,7 +11,6 @@ import (
 	ai "read-it/internal/ai"
 	qu "read-it/internal/components/queue"
 	sl "read-it/internal/components/selector"
-	sp "read-it/internal/components/spinner"
 	ta "read-it/internal/components/textarea"
 	ti "read-it/internal/components/textinput"
 	ji "read-it/internal/jira"
@@ -87,28 +86,11 @@ func main() {
 	// ----------------------------------------------- Phase 2: Get AI to summarize them -----------------------------------------------
 	// After that, let's get AI to summarize it
 	// while we wait, we get a nice spinner animation :)
-	spinner, err := sp.NewSpinner(fmt.Sprintf("Generating summary with %s...", ag.GetName()), in.CancelCtrl).Start()
-	defer func() {
-		if r := recover(); r != nil {
-			spinner.Stop()
-			in.ClearStdOut()
-		}
-	}()
-
+	resp, err := ai.GetAISummaryWithUI(instructions, []string{tests[optionsChosen].PrintItem()}, ag)
 	if err != nil {
 		_ = logger.Log(err.Error())
-		panic(1)
+		os.Exit(1)
 	}
-
-	// ('getting the summary' only starts here)
-	resp, err := ai.AISummary(instructions, []string{tests[optionsChosen].PrintItem()}, ag)
-	if err != nil {
-		_ = logger.Log(err.Error())
-		panic(1)
-	}
-
-	spinner.Stop()
-	in.ClearStdOut()
 
 	// -------------------------------------------------- Phase 3: Review summary ---------------------------------------------------
 	// Now, output that response to a textarea, so that we can review it
