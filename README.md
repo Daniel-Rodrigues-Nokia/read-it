@@ -17,6 +17,9 @@ Its purpose is to help developers browse Cypress test files, pick a test, automa
 - Lets user review and manually refine the summary before committing
 - After confirmation, creates a new “test” ticket in Jira and links it to an existing ticket (bug, improvement, etc.)
 
+## Download & Run
+Download the latest version from the [Releases](https://github.com/Daniel-Rodrigues-Nokia/read-it/releases) page.
+
 ## Requirements
 
 - **Go** `1.24` or newer (for building from source; see `go.mod`)
