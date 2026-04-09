@@ -27,6 +27,8 @@ func (l log) Log(msg string) error {
 	}
 	defer f.Close()
 
+	fmt.Printf("\n[read-it]: error detected - check %s\n", l.dir)
+
 	buffer := strings.Builder{}
 
 	buffer.WriteString("\n---------------\n")
