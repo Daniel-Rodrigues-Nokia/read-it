@@ -20,6 +20,9 @@ import (
 //go:embed instructions.txt
 var instructions string
 
+// this variable will be overwritten when building in CI/CD
+var version = "dev"
+
 const (
 	debugTestSelection = "selection"
 	debugTextareaOuput = "textarea"
@@ -43,6 +46,18 @@ func main() {
 	}
 
 	logger := in.NewLog()
+
+	// check version
+	needsUpdated, err := in.NewSmChecker(version).CheckVersion()
+	if err != nil {
+		_ = logger.Log(err.Error())
+	}
+
+	// alert the user to update binary
+	if needsUpdated {
+		fmt.Printf("new version available. Please update\n")
+		os.Exit(3)
+	}
 
 	// get agent
 	var ag ai.AiClient = ai.Copilot{}
