@@ -55,7 +55,7 @@ func main() {
 
 	// alert the user to update binary
 	if needsUpdated {
-		fmt.Printf("new version available. Please update\n")
+		fmt.Printf("new version available. Please update (current = %s)\n", version)
 		os.Exit(3)
 	}
 
