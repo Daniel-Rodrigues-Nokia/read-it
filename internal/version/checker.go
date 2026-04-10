@@ -1,11 +1,13 @@
-package internal
+package version
 
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"time"
+
+	"read-it/internal"
+	"read-it/internal/components/spinner"
 )
 
 type GithubRelease struct {
@@ -22,9 +24,21 @@ func NewSmChecker(currentVersion string) smChecker {
 	return smChecker{version: currentVersion}
 }
 
-func (smC smChecker) CheckVersion() (bool, error) {
-	fmt.Print("Checking for updates...\n")
+func (smC smChecker) CheckVersionWithUI() (bool, error) {
+	spinner, err := spinner.NewSpinner("Checking for updates...", internal.CancelCtrl).Start()
+	if err != nil {
+		return false, err
+	}
 
+	defer func() {
+		spinner.Stop()
+		internal.ClearStdOut()
+	}()
+
+	return smC.checkVersion()
+}
+
+func (smC smChecker) checkVersion() (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 

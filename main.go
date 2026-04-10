@@ -15,6 +15,7 @@ import (
 	ti "read-it/internal/components/textinput"
 	ji "read-it/internal/jira"
 	rd "read-it/internal/reader"
+	vs "read-it/internal/version"
 )
 
 //go:embed instructions.txt
@@ -48,7 +49,7 @@ func main() {
 	logger := in.NewLog()
 
 	// check version
-	needsUpdated, err := in.NewSmChecker(version).CheckVersion()
+	needsUpdated, err := vs.NewSmChecker(version).CheckVersionWithUI()
 	if err != nil {
 		_ = logger.Log(err.Error())
 	}
