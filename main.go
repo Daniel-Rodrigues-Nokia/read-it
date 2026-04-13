@@ -49,14 +49,15 @@ func main() {
 	logger := in.NewLog()
 
 	// check version
-	needsUpdated, err := vs.NewSmChecker(version).CheckVersionWithUI()
+	checker := vs.NewSmChecker(version)
+	needsUpdated, err := checker.CheckVersionWithUI()
 	if err != nil {
 		_ = logger.Log(err.Error())
 	}
 
 	// alert the user to update binary
 	if needsUpdated {
-		fmt.Printf("new version available. Please update (current = %s)\n", version)
+		fmt.Println(checker.GetUpdateMsg())
 		os.Exit(3)
 	}
 

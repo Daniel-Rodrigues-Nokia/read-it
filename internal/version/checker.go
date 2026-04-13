@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -27,13 +28,14 @@ type versionCheckCache struct {
 }
 
 type smChecker struct {
-	version string
+	version    string
+	releaseURL string
 }
 
 var url string = "https://api.github.com/repos/Daniel-Rodrigues-Nokia/read-it/releases/latest"
 
 func NewSmChecker(currentVersion string) smChecker {
-	return smChecker{version: currentVersion}
+	return smChecker{version: currentVersion, releaseURL: "https://github.com/Daniel-Rodrigues-Nokia/read-it/releases"}
 }
 
 func (smC smChecker) CheckVersionWithUI() (bool, error) {
@@ -52,6 +54,12 @@ func (smC smChecker) CheckVersionWithUI() (bool, error) {
 	}()
 
 	return smC.checkRemoteVersion()
+}
+
+func (smC smChecker) GetUpdateMsg() string {
+	return fmt.Sprintf(`New version available (current = %s)
+Please download the latest release from: %s
+`, smC.version, smC.releaseURL)
 }
 
 // tryFromCache reports whether the caller should skip the network (second return value).
