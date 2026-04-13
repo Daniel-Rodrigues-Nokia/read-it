@@ -51,7 +51,7 @@ func (smC smChecker) CheckVersionWithUI() (bool, error) {
 		internal.ClearStdOut()
 	}()
 
-	return smC.checkVersion()
+	return smC.checkRemoteVersion()
 }
 
 // tryFromCache reports whether the caller should skip the network (second return value).
@@ -111,7 +111,7 @@ func (smC smChecker) writeCache(remoteTag string) {
 	_ = os.WriteFile(path, data, 0o644)
 }
 
-func (smC smChecker) checkVersion() (bool, error) {
+func (smC smChecker) checkRemoteVersion() (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
