@@ -84,4 +84,5 @@ Options:
 - [x] ~~Improve 'instructions.txt' to use proper formatting (bullet points)~~
 - [x] ~~Support Cursor~~
 - [x] ~~Gracefully handle errors~~
+- [x] ~~Alert user for updates~~
 - [ ] Multiple test selection
