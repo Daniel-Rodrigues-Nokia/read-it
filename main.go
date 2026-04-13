@@ -15,10 +15,14 @@ import (
 	ti "read-it/internal/components/textinput"
 	ji "read-it/internal/jira"
 	rd "read-it/internal/reader"
+	vs "read-it/internal/version"
 )
 
 //go:embed instructions.txt
 var instructions string
+
+// this variable will be overwritten when building in CI/CD
+var version = "dev"
 
 const (
 	debugTestSelection = "selection"
@@ -43,6 +47,19 @@ func main() {
 	}
 
 	logger := in.NewLog()
+
+	// check version
+	checker := vs.NewSmChecker(version)
+	needsUpdated, err := checker.CheckVersionWithUI()
+	if err != nil {
+		_ = logger.Log(err.Error())
+	}
+
+	// alert the user to update binary
+	if needsUpdated {
+		fmt.Println(checker.GetUpdateMsg())
+		os.Exit(3)
+	}
 
 	// get agent
 	var ag ai.AiClient = ai.Copilot{}

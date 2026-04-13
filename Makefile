@@ -1,6 +1,7 @@
 .DEFAULT_GOAL := build
 
-.PHONY: clean fmt vet build
+VERSION ?= dev
+.PHONY: clean fmt vet build build-ci
 
 clean:
 				go clean
@@ -10,3 +11,5 @@ vet: fmt
 				go vet ./...
 build: vet
 				go build -o bin/read-it 
+build-ci: vet
+				go build -ldflags "-X main.version=$(VERSION)" -o bin/read-it
