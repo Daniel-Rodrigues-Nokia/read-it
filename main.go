@@ -36,8 +36,14 @@ func main() {
 	filePath := flag.String("f", "", "path to file")
 	agent := flag.String("a", agentCopilot, "agent to use: copilot | cursor")
 	debug := flag.String("debug", "", "debug")
+	versionF := flag.Bool("v", false, "print version")
 
 	flag.Parse()
+
+	if *versionF {
+		fmt.Printf("read-it version: %v\n", version)
+		os.Exit(0)
+	}
 
 	// no file path ? throw error
 	if *filePath == "" {
