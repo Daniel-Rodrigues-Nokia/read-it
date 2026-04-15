@@ -67,6 +67,7 @@ read-it -f path/to/spec.cy.ts
 Usage: read-it [options]
 
 Options:
+	-v 				print version
 	-f <file>		Path to cypress test file
 	-a <agent>		Agent to use: copilot | cursor. Default = copilot
 	-debug <mode>	Enable debug output and stop execution early.
