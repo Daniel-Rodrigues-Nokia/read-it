@@ -36,6 +36,7 @@ Download the latest version from the [Releases](https://github.com/Daniel-Rodrig
 - `JIRA_USER`
 - `JIRA_URL`
 - `JIRA_PROJECT`
+- `JIRA_EPIC`
 
 ## Installation
 
