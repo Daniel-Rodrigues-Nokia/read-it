@@ -12,12 +12,13 @@ type Config struct {
 	JiraUser    string
 	JiraURL     string
 	JiraProject string
+	JiraEpic    string
 }
 
 const ENV = "read-it.env"
 
 func generateBaseTemplate(path string) error {
-	content := []byte("JIRA_API_KEY=\nJIRA_USER=\nJIRA_URL=\nJIRA_PROJECT=\n")
+	content := []byte("JIRA_API_KEY=\nJIRA_USER=\nJIRA_URL=\nJIRA_PROJECT=\nJIRA_EPIC=\n")
 	err := os.WriteFile(path, content, 0o644) // 0644 -> chmod +x 0644, aka, owner has read+write permissions, while group & others are read only
 	if err != nil {
 		return err
@@ -49,5 +50,6 @@ func LoadEnv() (*Config, error) {
 		JiraUser:    os.Getenv("JIRA_USER"),
 		JiraURL:     os.Getenv("JIRA_URL"),
 		JiraProject: os.Getenv("JIRA_PROJECT"),
+		JiraEpic:    os.Getenv("JIRA_EPIC"),
 	}, nil
 }
