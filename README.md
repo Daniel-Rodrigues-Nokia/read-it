@@ -1,7 +1,7 @@
 # read-it
 
 `read-it` is a small command-line TUI ([bubbletea](https://github.com/charmbracelet/bubbletea)) tool written in Go.  
-Its purpose is to help developers browse Cypress test files, pick a test, automatically generate a summary using **GitHub Copilot CLI** or **Cursor CLI**, review/adjust the summary, and then create a Jira “test” ticket linked to a bug or improvement.
+Its purpose is to help developers browse **Cypress** (frontend, JS/TS) or **JUnit** (backend, Java) test files, pick a test, automatically generate a summary using **GitHub Copilot CLI** or **Cursor CLI**, review/adjust the summary, and then create a Jira “test” ticket linked to a bug or improvement.
 
 ### Disclaimer
 
@@ -11,7 +11,7 @@ Its purpose is to help developers browse Cypress test files, pick a test, automa
 
 ## Features
 
-- Parses Cypress test files (JS/TS) and extracts all tests
+- Parses Cypress test files (JS/TS) or JUnit test files (Java) and extracts all tests
 - Presents a terminal UI allowing you to browse and choose a test to summarise
 - Summarises tests via **Copilot** or **Cursor** CLI (`-a copilot` | `-a cursor`)
 - Lets user review and manually refine the summary before committing
@@ -19,7 +19,10 @@ Its purpose is to help developers browse Cypress test files, pick a test, automa
 
 ## Download & Run
 
-Download the latest version from the [Releases](https://github.com/Daniel-Rodrigues-Nokia/read-it/releases) page.
+Download the latest build from the [Releases](https://github.com/Daniel-Rodrigues-Nokia/read-it/releases) page. There are two assets:
+
+- **`read-it-cypress.zip`** - use this binary when summarising Cypress tests.
+- **`read-it-junit.zip`** - use this binary when summarising JUnit tests.
 
 ## Requirements
 
@@ -61,7 +64,8 @@ Ensure `$HOME/bin` is on your `PATH` (for example in `~/.bashrc`: `export PATH="
 Example:
 
 ```bash
-read-it -f path/to/spec.cy.ts
+read-it -f path/to/spec.cy.ts          # Cypress (use read-it-cypress)
+read-it -f path/to/ServiceTest.java    # JUnit (use read-it-junit)
 ```
 
 ```
@@ -69,7 +73,7 @@ Usage: read-it [options]
 
 Options:
 	-v 				print version
-	-f <file>		Path to cypress test file
+	-f <file>		Path to Cypress or JUnit test file (use the matching release binary)
 	-a <agent>		Agent to use: copilot | cursor. Default = copilot
 	-debug <mode>	Enable debug output and stop execution early.
 						Available modes:
