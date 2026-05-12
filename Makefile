@@ -12,6 +12,6 @@ fmt: clean
 vet: fmt
 				go vet ./...
 build: vet
-				go build -o bin/read-it 
+				go build -o bin/read-it-$(TEST_TYPE)
 build-ci: vet
-				go build -ldflags "-X main.version=$(VERSION) -X main.testType=$(TEST_TYPE)" -o bin/read-it
+				go build -ldflags "-X main.version=$(VERSION) -X main.testType=$(TEST_TYPE)" -o bin/read-it-$(TEST_TYPE)
