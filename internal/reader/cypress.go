@@ -1,6 +1,12 @@
 package reader
 
-import "strings"
+import (
+	_ "embed"
+	"strings"
+)
+
+//go:embed instructions-cypress.txt
+var instructionsForCypress string
 
 const (
 	startOfTest          string = "it("
@@ -40,5 +46,5 @@ func (c Cypress) GetTestTitle(test string) string {
 }
 
 func (c Cypress) GetInstructions() string {
-	return ""
+	return instructionsForCypress
 }

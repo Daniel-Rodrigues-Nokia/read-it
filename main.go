@@ -18,9 +18,6 @@ import (
 	vs "read-it/internal/version"
 )
 
-//go:embed instructions.txt
-var instructions string
-
 // this variable will be overwritten when building in CI/CD
 var version = "dev"
 
@@ -80,7 +77,9 @@ func main() {
 	}
 
 	// scan file and get tests
-	tests, err := rd.ScanTests(*filePath, rd.Cypress{})
+	// TODO: This needs to be configurable (Cypress | JUnit)
+	reader := rd.Cypress{}
+	tests, err := rd.ScanTests(*filePath, reader)
 	if err != nil {
 		_ = logger.Log(err.Error())
 		os.Exit(1)
@@ -109,7 +108,7 @@ func main() {
 	// ----------------------------------------------- Phase 2: Get AI to summarize them -----------------------------------------------
 	// After that, let's get AI to summarize it
 	// while we wait, we get a nice spinner animation :)
-	resp, err := ai.GetAISummaryWithUI(instructions, []string{tests[optionsChosen].PrintItem()}, ag)
+	resp, err := ai.GetAISummaryWithUI(reader.GetInstructions(), []string{tests[optionsChosen].PrintItem()}, ag)
 	if err != nil {
 		_ = logger.Log(err.Error())
 		os.Exit(1)
