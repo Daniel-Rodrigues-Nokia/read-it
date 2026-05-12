@@ -59,30 +59,6 @@ func aiSummary(instructions string, tests []string, ai AiClient) (*[]Summary, er
 	return resp, nil
 }
 
-// NOTE: DEPRECATED: since instructions.txt will be embed into the bin file
-// we can just use it straight away (no need to read files)
-// func ReadInstructions(filePath string) (*strings.Builder, error) {
-// 	file, err := os.Open(filePath)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-// 	defer file.Close()
-//
-// 	instructions := strings.Builder{}
-// 	scanner := bufio.NewScanner(file)
-//
-// 	for scanner.Scan() {
-// 		rawLine := scanner.Text()
-// 		instructions.WriteString(rawLine)
-// 	}
-//
-// 	if err := scanner.Err(); err != nil {
-// 		return nil, err
-// 	}
-//
-// 	return &instructions, nil
-// }
-
 func BuildInstructions(instructions string, tests []string) (*strings.Builder, error) {
 	s := strings.Builder{}
 
