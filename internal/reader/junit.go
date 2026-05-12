@@ -31,3 +31,7 @@ func (j JUnit) GetTestTitle(test string) string {
 	}
 	return "(unknown test)"
 }
+
+func (j JUnit) GetInstructions() string {
+	return ""
+}

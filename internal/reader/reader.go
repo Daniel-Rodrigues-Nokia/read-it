@@ -18,6 +18,7 @@ import (
 type Reader interface {
 	IsValidLine(line string) bool
 	GetTestTitle(test string) string
+	GetInstructions() string
 }
 
 //////////////////////

@@ -38,3 +38,7 @@ func (c Cypress) GetTestTitle(test string) string {
 	}
 	return "(unknown test)"
 }
+
+func (c Cypress) GetInstructions() string {
+	return ""
+}
