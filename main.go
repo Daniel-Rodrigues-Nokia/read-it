@@ -18,11 +18,19 @@ import (
 	vs "read-it/internal/version"
 )
 
-//go:embed instructions.txt
-var instructions string
+const (
+	Cypress string = "cypress"
+	JUnit   string = "junit"
+)
 
-// this variable will be overwritten when building in CI/CD
-var version = "dev"
+// these variables will be overwritten when building in CI/CD
+var (
+	// default version when running locally
+	version = "dev"
+
+	// default test type reader
+	testType = Cypress
+)
 
 const (
 	debugTestSelection = "selection"
@@ -79,8 +87,22 @@ func main() {
 		os.Exit(1)
 	}
 
+	// TODO: clean me up
+	var reader rd.Reader
+	switch testType {
+	case Cypress:
+		reader = rd.Cypress{}
+
+	case JUnit:
+		reader = rd.JUnit{}
+
+	// default to Cypress if not recognized
+	default:
+		reader = rd.Cypress{}
+	}
+
 	// scan file and get tests
-	tests, err := rd.ScanTests(*filePath, rd.Cypress{})
+	tests, err := rd.ScanTests(*filePath, reader)
 	if err != nil {
 		_ = logger.Log(err.Error())
 		os.Exit(1)
@@ -109,7 +131,7 @@ func main() {
 	// ----------------------------------------------- Phase 2: Get AI to summarize them -----------------------------------------------
 	// After that, let's get AI to summarize it
 	// while we wait, we get a nice spinner animation :)
-	resp, err := ai.GetAISummaryWithUI(instructions, []string{tests[optionsChosen].PrintItem()}, ag)
+	resp, err := ai.GetAISummaryWithUI(reader.GetInstructions(), []string{tests[optionsChosen].PrintItem()}, ag)
 	if err != nil {
 		_ = logger.Log(err.Error())
 		os.Exit(1)

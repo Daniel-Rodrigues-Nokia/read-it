@@ -25,24 +25,41 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.24"
+          go-version: "1.24.0"
 
-      - name: Build (Linux)
+      - name: Build Cypress version (Linux)
         if: matrix.os == 'ubuntu-latest'
-        run: make build-ci VERSION=${{ github.ref_name }}
+        run: make build-ci VERSION=${{ github.ref_name }} TEST_TYPE="cypress"
 
-      - name: Package Linux
+      - name: Build JUnit version (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: make build-ci VERSION=${{ github.ref_name }} TEST_TYPE="junit"
+
+      - name: Package Cypress Reader (Linux)
         if: matrix.os == 'ubuntu-latest'
         run: |
-          mkdir release
-          mv bin/read-it release/read-it
-          zip -j read-it.zip release/*
+          mkdir -p release
+          mv bin/read-it-cypress release/read-it-cypress
+          zip -j read-it-cypress.zip release/read-it-cypress
 
-      - name: Upload artifacts
+      - name: Package JUnit Reader (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          mkdir -p release
+          mv bin/read-it-junit release/read-it-junit
+          zip -j read-it-junit.zip release/read-it-junit
+
+      - name: Upload artifacts (Cypress)
         uses: actions/upload-artifact@v4
         with:
-          name: read-it
-          path: "*.zip"
+          name: read-it-cypress
+          path: "read-it-cypress.zip"
+
+      - name: Upload artifacts (JUnit)
+        uses: actions/upload-artifact@v4
+        with:
+          name: read-it-junit
+          path: "read-it-junit.zip"
 
   release:
     name: Create GitHub Release

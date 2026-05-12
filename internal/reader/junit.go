@@ -1,6 +1,12 @@
 package reader
 
-import "strings"
+import (
+	_ "embed"
+	"strings"
+)
+
+//go:embed instructions-junit.txt
+var instructionsForJUnit string
 
 type JUnit struct{}
 
@@ -30,4 +36,8 @@ func (j JUnit) GetTestTitle(test string) string {
 		}
 	}
 	return "(unknown test)"
+}
+
+func (j JUnit) GetInstructions() string {
+	return instructionsForJUnit
 }
