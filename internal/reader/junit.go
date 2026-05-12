@@ -22,15 +22,18 @@ func (j JUnit) IsValidLine(line string) bool {
 }
 
 func (j JUnit) GetTestTitle(test string) string {
+	keyword := "void " // whitespace at the end is necessary
+
 	for line := range strings.SplitSeq(test, "\n") {
 		line = strings.TrimSpace(line)
 
-		if strings.HasPrefix(line, "void") {
-			// grab what's after 'void' and before "()"
-			start := strings.Index(line, " ")
+		if strings.HasPrefix(line, strings.TrimSpace(keyword)) || strings.HasPrefix(line, "public") {
+			// grab what's after keyword and before "()"
+			start := strings.Index(line, keyword)
 			end := strings.LastIndex(line, "(")
+
 			if start != -1 && end > start {
-				return line[start+1 : end]
+				return line[start+len(keyword) : end]
 			}
 			return line
 		}
