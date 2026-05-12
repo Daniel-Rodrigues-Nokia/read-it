@@ -19,7 +19,7 @@ Follow these guidelines:
     *   First Test:
         *   JUnit:
               @Test
-              void bp12541_markingsFilterUsesContainsWithPipeSeparatedValues() throws Exception {
+              void markingsFilterUsesContainsWithPipeSeparatedValues() throws Exception {
                 mockMvc.perform(get("/decisions/preapproval/tasks")
                         .param("filter", "{\"markings\":[\"contains\",\"chip1|chip2\"]}")
                         .param("page", "1"))
@@ -38,7 +38,7 @@ Follow these guidelines:
     *   Second Test:
         *   JUnit:
               @Test
-              void bp10907_rateLimitDependsOnClientTier() throws Exception {
+              void rateLimitDependsOnClientTier() throws Exception {
                   String[][] cases = {
                       {"free-tier", "429"},
                       {"standard-tier", "200"},
@@ -91,7 +91,7 @@ Follow these guidelines:
       *  Third Test:
          * JUnit:
               @Test
-              void bp11886_validateThatGroupingConfigAndMappingsConfigAreSentToTheBE() throws Exception {
+              void validateThatGroupingConfigAndMappingsConfigAreSentToTheBE() throws Exception {
                   Map<String, Object> groupingConfigSnapshot = Map.of(
                       "OPEX", "001__OPEX",
                       "OPEX LVA", "002__LVA",
