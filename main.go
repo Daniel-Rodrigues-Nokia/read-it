@@ -18,8 +18,19 @@ import (
 	vs "read-it/internal/version"
 )
 
-// this variable will be overwritten when building in CI/CD
-var version = "dev"
+const (
+	Cypress string = "cypress"
+	JUnit   string = "junit"
+)
+
+// these variables will be overwritten when building in CI/CD
+var (
+	// default version when running locally
+	version = "dev"
+
+	// default test type reader
+	testType = Cypress
+)
 
 const (
 	debugTestSelection = "selection"
@@ -76,9 +87,21 @@ func main() {
 		os.Exit(1)
 	}
 
+	// TODO: clean me up
+	var reader rd.Reader
+	switch testType {
+	case Cypress:
+		reader = rd.Cypress{}
+
+	case JUnit:
+		reader = rd.JUnit{}
+
+	// default to Cypress if not recognized
+	default:
+		reader = rd.Cypress{}
+	}
+
 	// scan file and get tests
-	// TODO: This needs to be configurable (Cypress | JUnit)
-	reader := rd.Cypress{}
 	tests, err := rd.ScanTests(*filePath, reader)
 	if err != nil {
 		_ = logger.Log(err.Error())

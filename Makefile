@@ -1,6 +1,8 @@
 .DEFAULT_GOAL := build
 
 VERSION ?= dev
+TEST_TYPE ?= cypress
+
 .PHONY: clean fmt vet build build-ci
 
 clean:
@@ -12,4 +14,4 @@ vet: fmt
 build: vet
 				go build -o bin/read-it 
 build-ci: vet
-				go build -ldflags "-X main.version=$(VERSION)" -o bin/read-it
+				go build -ldflags "-X main.version=$(VERSION) -X main.testType=$(TEST_TYPE)" -o bin/read-it
