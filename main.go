@@ -42,7 +42,7 @@ const (
 
 func main() {
 	filePath := flag.String("f", "", "path to file")
-	agent := flag.String("a", agentCopilot, "agent to use: copilot | cursor")
+	agent := flag.String("a", agentCursor, "agent to use: copilot | cursor")
 	debug := flag.String("debug", "", "debug")
 	versionF := flag.Bool("v", false, "print version")
 
