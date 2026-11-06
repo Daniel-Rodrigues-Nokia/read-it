@@ -72,13 +72,13 @@ read-it -f path/to/ServiceTest.java    # JUnit (use read-it-junit)
 Usage: read-it [options]
 
 Options:
-	-v 				print version
-	-f <file>		Path to Cypress or JUnit test file (use the matching release binary)
-	-a <agent>		Agent to use: copilot | cursor. Default = cursor
-	-debug <mode>	Enable debug output and stop execution early.
-						Available modes:
-							* selection:	After choosing a test, print the selected test details and exit.
-							* textarea:		After reviewing AI summary, print the final output and exit.
+  -v              print version
+  -f <file>       Path to Cypress or JUnit test file (use the matching release binary)
+  -a <agent>      Agent to use: copilot | cursor. Default = cursor
+  -debug <mode>   Enable debug output and stop execution early.
+                  Available modes:
+                      * selection:  After choosing a test, print the selected test details and exit.
+                      * textarea:   After reviewing AI summary, print the final output and exit.
 ```
 
 ## TODO:
