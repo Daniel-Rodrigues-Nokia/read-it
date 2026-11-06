@@ -33,8 +33,10 @@ func (c Cursor) Summarize(instructions string, tests []string) (*[]Summary, erro
 		return nil, err
 	}
 
+	parsedSummary := extractJSON(string(summary))
+
 	var testSum Summary
-	if err := json.Unmarshal([]byte(summary), &testSum); err != nil {
+	if err := json.Unmarshal([]byte(parsedSummary), &testSum); err != nil {
 		return nil, err
 	}
 
