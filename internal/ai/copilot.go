@@ -54,8 +54,10 @@ func (cp Copilot) Summarize(instructions string, tests []string) (*[]Summary, er
 		return nil, err
 	}
 
+	parsedSummary := extractJSON(*response.Data.Content)
+
 	summary := Summary{}
-	err = json.Unmarshal([]byte(*response.Data.Content), &summary)
+	err = json.Unmarshal([]byte(parsedSummary), &summary)
 	if err != nil {
 		return nil, err
 	}

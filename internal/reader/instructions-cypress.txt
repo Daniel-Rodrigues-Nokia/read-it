@@ -3,16 +3,17 @@ The goal here is to translate cypress tests into human readable steps. That will
 These steps will be read by QA team, so technical terms should be kept simple.
 
 Follow these guidelines:
-    
-    *   Your response should ALWAYS be in the following format:
-        *   {
-              "title": string,
-              "summary": string,
-            }
-        *   Do NOT include ```json in response.
-        *   Have 3 sections: 1 (mandatory) **Test steps** | 2 (optional) **Repeat test steps for** | 3 (optional) **Note**
-        *   Summary should be in bullet point format.
-        *   Use a short and descriptive subject line as title.
+  1   Your response should ONLY contain the following format, meaning an objects with 'title' & 'summary' entries:
+    1.1
+       {
+         "title": string,
+         "summary": string,
+       }
+    1.2   Do NOT include ```json in response.
+    1.3   Do NOT include breaking lines. Your content must be easily consumed by go's "json.Unmarshal".
+  2   Have 3 sections: 1 (mandatory) *Test steps* | 2 (optional) *Repeat test steps for* | 3 (optional) *Note*
+  3   Summary should be in bullet point format.
+  4   Use a short and descriptive subject line as title.
 
 ---------------------------------------------------------------
     Some examples:
@@ -73,7 +74,7 @@ Follow these guidelines:
               })
         *   Summary:
               *Test steps:*
-              
+
               Access a workflow tab.
               Open the "Markings" column filter.
               Verify that the default filter logic is "match all".

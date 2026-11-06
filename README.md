@@ -74,7 +74,7 @@ Usage: read-it [options]
 Options:
 	-v 				print version
 	-f <file>		Path to Cypress or JUnit test file (use the matching release binary)
-	-a <agent>		Agent to use: copilot | cursor. Default = copilot
+	-a <agent>		Agent to use: copilot | cursor. Default = cursor
 	-debug <mode>	Enable debug output and stop execution early.
 						Available modes:
 							* selection:	After choosing a test, print the selected test details and exit.
