@@ -52,6 +52,7 @@ type Fields struct {
 	Summary     string    `json:"summary"`
 	IssueType   IssueType `json:"issuetype"`
 	Description string    `json:"description"`
+	Labels      []string  `json:"labels"`
 	Epic        string    `json:"customfield_12790"` // this is a custom field that for epic link
 }
 
@@ -121,6 +122,7 @@ func (j *Jira) CreateXrayTest(summary, desc string) (string, error) {
 			},
 			Description: desc,
 			Epic:        j.JiraEpic,
+			Labels:      j.JiraLabels,
 		},
 	}
 
