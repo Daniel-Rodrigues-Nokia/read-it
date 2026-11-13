@@ -3,6 +3,7 @@ package internal
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -13,6 +14,7 @@ type Config struct {
 	JiraURL     string
 	JiraProject string
 	JiraEpic    string
+	JiraLabels  []string
 }
 
 const ENV = "read-it.env"
@@ -25,6 +27,17 @@ func generateBaseTemplate(path string) error {
 	}
 
 	return nil
+}
+
+func getLabels() []string {
+	rawLabels := os.Getenv("JIRA_LABELS")
+	labels := []string{}
+
+	for lb := range strings.SplitSeq(rawLabels, ",") {
+		labels = append(labels, strings.TrimSpace(lb))
+	}
+
+	return labels
 }
 
 func LoadEnv() (*Config, error) {
@@ -51,5 +64,6 @@ func LoadEnv() (*Config, error) {
 		JiraURL:     os.Getenv("JIRA_URL"),
 		JiraProject: os.Getenv("JIRA_PROJECT"),
 		JiraEpic:    os.Getenv("JIRA_EPIC"),
+		JiraLabels:  getLabels(),
 	}, nil
 }
